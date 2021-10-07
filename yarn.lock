@@ -122,6 +122,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@heroicons/react@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "@heroicons/react@npm:1.0.4"
+  peerDependencies:
+    react: ">= 16"
+  checksum: 08f2853a49e51f274f22e8e1bb4e7d8a49456b7eb770447da66fd06ac05bf821ddf5d93170088d61ec44ae66cfbdc877c287861d5a3d22aad1785659502e3a71
+  languageName: node
+  linkType: hard
+
 "@napi-rs/triples@npm:^1.0.3":
   version: 1.0.3
   resolution: "@napi-rs/triples@npm:1.0.3"
@@ -2614,6 +2623,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "nextwind@workspace:."
   dependencies:
+    "@heroicons/react": ^1.0.4
     "@types/node": ^16.10.3
     "@types/react": ^17.0.27
     autoprefixer: ^10.3.7
@@ -2623,6 +2633,7 @@ __metadata:
     react-dom: 17.0.2
     tailwindcss: ^2.2.16
     typescript: ^4.3.5
+    zustand: ^3.5.13
   languageName: unknown
   linkType: soft
 
@@ -4271,5 +4282,17 @@ typescript@^4.3.5:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
+  languageName: node
+  linkType: hard
+
+"zustand@npm:^3.5.13":
+  version: 3.5.13
+  resolution: "zustand@npm:3.5.13"
+  peerDependencies:
+    react: ">=16.8"
+  peerDependenciesMeta:
+    react:
+      optional: true
+  checksum: 13f3852b5a71eaee369e2e12a2946d4b114290b2daa51f59fce50209a6f89cefdfdc9bd86aa739ff9a2c82e9a504417f63da04b6a33ef767752f58d65cb41e39
   languageName: node
   linkType: hard

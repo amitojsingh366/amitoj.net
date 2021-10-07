@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { DetailedHTMLProps, FC, HTMLAttributes } from "react";
 
 export enum TextSize {
     xs = 'xs',
@@ -47,27 +47,33 @@ export enum GradientDirection {
     bottomLeft = 'bg-gradient-to-bl',
 }
 
-export type GradientTextType = {
+export type GradientTextType = DetailedHTMLProps<
+    HTMLAttributes<HTMLParagraphElement>,
+    HTMLParagraphElement
+> & {
     size?: TextSize;
     colors?: GradientColor;
     direction?: GradientDirection;
     fontWeight?: FontWeight;
-    className?: string
 }
 
 export const GradientText: FC<GradientTextType> = ({
     children,
+    style,
+    className,
     size = TextSize.base,
     colors = GradientColor["purple-pink-red"],
     direction = GradientDirection.right,
     fontWeight = FontWeight.normal,
-    className = '',
 }) => {
     return (
         <p
             className={`text-${size} text-transparent bg-clip-text ${direction} 
             ${colors} ${fontWeight} ${className} p-1`}
-            style={{ fontFamily: 'Montserrat' }}
+            style={{
+                ...style,
+                fontFamily: 'Montserrat'
+            }}
         >
             {children}
         </p>);
