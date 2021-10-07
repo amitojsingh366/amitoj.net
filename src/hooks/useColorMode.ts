@@ -1,5 +1,6 @@
 import create from "zustand";
 import { combine } from "zustand/middleware";
+import { isServer } from "../lib/constants";
 
 const colorModeKey = "@app/colorMode";
 export enum ColorMode {
@@ -8,13 +9,21 @@ export enum ColorMode {
 }
 
 const getDefaultValues = () => {
-    try {
-        return {
-            mode: localStorage.getItem(colorModeKey) as ColorMode || ColorMode.dark,
+    if (!isServer) {
+        try {
+            return {
+                mode: localStorage.getItem(colorModeKey) as ColorMode || ColorMode.dark,
+            };
+        } catch {
+            return {
+                mode: ColorMode.dark
+            }
         }
-    } catch {
-        return { mode: ColorMode.dark };
     }
+
+    return {
+        mode: "",
+    };
 
 };
 

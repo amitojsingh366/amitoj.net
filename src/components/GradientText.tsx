@@ -1,32 +1,29 @@
 import { DetailedHTMLProps, FC, HTMLAttributes } from "react";
 
-export enum TextSize {
-    xs = 'xs',
-    sm = 'sm',
-    base = 'base',
-    lg = 'lg',
-    xl = 'xl',
-    '2xl' = '2xl',
-    '3xl' = '3xl',
-    '4xl' = '4xl',
-    '5xl' = '5xl',
-    '6xl' = '6xl',
-    '7xl' = '7xl',
-    '8xl' = '8xl',
-    '9xl' = '9xl',
-}
+export type TextSize = 'text-xs'
+    | 'text-sm'
+    | 'text-base'
+    | 'text-lg'
+    | 'text-xl'
+    | 'text-2xl'
+    | 'text-3xl'
+    | 'text-4xl'
+    | 'text-5xl'
+    | 'text-6xl'
+    | 'text-7xl'
+    | 'text-8xl'
+    | 'text-9xl'
 
-export enum FontWeight {
-    thin = 'font-thin',
-    extraLight = 'font-extraLight',
-    light = 'font-light',
-    normal = 'font-normal',
-    medium = 'font-medium',
-    semibold = 'font-semibold',
-    bold = 'font-bold',
-    extraBold = 'font-extraBold',
-    black = 'font-black',
-}
+
+export type FontWeight = 'font-thin'
+    | 'font-extraLight'
+    | 'font-light'
+    | 'font-normal'
+    | 'font-medium'
+    | 'font-semibold'
+    | 'font-bold'
+    | 'font-extraBold'
+    | 'font-black'
 
 export enum GradientColor {
     'purple-pink-red' = 'from-purple-400 via-pink-500 to-red-500',
@@ -61,14 +58,14 @@ export const GradientText: FC<GradientTextType> = ({
     children,
     style,
     className,
-    size = TextSize.base,
+    size = 'text-base',
     colors = GradientColor["purple-pink-red"],
     direction = GradientDirection.right,
-    fontWeight = FontWeight.normal,
+    fontWeight = 'font-normal',
 }) => {
     return (
         <p
-            className={`text-${size} text-transparent bg-clip-text ${direction} 
+            className={`${size} text-transparent bg-clip-text ${direction} 
             ${colors} ${fontWeight} ${className} p-1`}
             style={{
                 ...style,
