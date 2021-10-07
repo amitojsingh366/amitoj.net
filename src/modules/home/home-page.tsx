@@ -11,8 +11,7 @@ export const HomePage: FC = () => {
         <div className="w-full h-full flex flex-col items-center justify-center">
 
             <GradientText
-                size='text-7xl'
-                smallSize='text-5xl'
+                size='text-5xl'
                 fontWeight='font-bold'
                 colors={GradientColor["green-blue"]}
                 style={{
