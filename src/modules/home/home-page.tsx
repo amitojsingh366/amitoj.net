@@ -12,8 +12,9 @@ export const HomePage: FC = () => {
 
             <GradientText
                 size='text-7xl'
+                smallSize='text-5xl'
                 fontWeight='font-bold'
-                colors={GradientColor["green-blue-purple"]}
+                colors={GradientColor["green-blue"]}
                 style={{
                     textShadow: '0px 0px 50px rgba(52, 211, 153, 0.4)'
                 }}

@@ -31,6 +31,7 @@ export enum GradientColor {
     'green-blue-purple' = 'from-green-400 via-blue-500 to-purple-400',
     'green-pink-blue' = 'from-green-400 via-pink-500 to-blue-500',
     'green-blue' = 'from-green-400 to-blue-500',
+    'red-blue' = 'from-red-500 to-blue-500'
 }
 
 export enum GradientDirection {
@@ -49,6 +50,7 @@ export type GradientTextType = DetailedHTMLProps<
     HTMLParagraphElement
 > & {
     size?: TextSize;
+    smallSize?: TextSize;
     colors?: GradientColor;
     direction?: GradientDirection;
     fontWeight?: FontWeight;
@@ -59,13 +61,15 @@ export const GradientText: FC<GradientTextType> = ({
     style,
     className,
     size = 'text-base',
+    smallSize = 'text-sm',
     colors = GradientColor["purple-pink-red"],
     direction = GradientDirection.right,
     fontWeight = 'font-normal',
 }) => {
+    size = 'lg:' + size as TextSize;
     return (
         <p
-            className={`${size} text-transparent bg-clip-text ${direction} 
+            className={`${smallSize} ${size} text-transparent bg-clip-text ${direction} 
             ${colors} ${fontWeight} ${className} p-1`}
             style={{
                 ...style,
