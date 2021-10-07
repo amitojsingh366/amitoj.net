@@ -1,5 +1,4 @@
 import { FC } from "react";
-import { Headers } from "../../components/Headers";
 import { GradientColor, GradientText } from "../../components/GradientText";
 import { FaGithub, FaTwitter } from 'react-icons/fa';
 import { AiFillInstagram } from 'react-icons/ai';
@@ -10,10 +9,6 @@ export const HomePage: FC = () => {
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center">
-            <Headers
-                title="Amitoj Singh"
-                des="Amitoj Singh"
-                image="https://avatars.githubusercontent.com/u/35400192?v=4" />
 
             <GradientText
                 size='text-7xl'
