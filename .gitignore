@@ -41,4 +41,5 @@ yarn-error.log*
 !.yarn/sdks
 !.yarn/versions
 
-!./public/*.js
+public/*.js
+public/*.js.map
