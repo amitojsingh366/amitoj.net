@@ -1,3 +1,5 @@
-# NextWind
+# My portfolio
 
-A Next.js, Tailwindcss, Typescript and Yarn berry template.
+The source code to [amitoj.net](https://amitoj.net)
+
+> ##### More pages will be added soon
