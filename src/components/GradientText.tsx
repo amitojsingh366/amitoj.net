@@ -69,8 +69,8 @@ export const GradientText: FC<GradientTextType> = ({
             className={`${size} text-transparent bg-clip-text ${direction} 
             ${colors} ${fontWeight} ${className} p-1`}
             style={{
+                fontFamily: 'Montserrat',
                 ...style,
-                fontFamily: 'Montserrat'
             }}
         >
             {children}

@@ -22,7 +22,7 @@ const getDefaultValues = () => {
     }
 
     return {
-        mode: "",
+        mode: ColorMode.dark,
     };
 
 };

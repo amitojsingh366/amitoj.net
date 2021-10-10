@@ -1,8 +1,21 @@
 import "../styles/globals.css";
 import Head from 'next/head';
 import { AppProps } from "next/app";
+import ReactModal from 'react-modal';
+import { ColorMode, useColorMode } from "../hooks/useColorMode";
+import { useEffect } from "react";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
+  const colorMode = useColorMode().mode;
+
+  useEffect(() => {
+    if (!document) return;
+    ReactModal.setAppElement("#__next");
+    colorMode === ColorMode.dark ?
+      document.documentElement.classList.add(ColorMode.dark) :
+      document.documentElement.classList.remove(ColorMode.dark)
+  }, [colorMode])
+
   return (
     <>
       <Head>
