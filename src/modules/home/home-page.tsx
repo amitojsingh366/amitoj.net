@@ -10,12 +10,10 @@ export type HomePageProps = {
 }
 
 export const HomePage: FC<HomePageProps> = ({ colorMode }) => {
-
     return (
         <div className="w-full h-full flex flex-col items-center justify-center">
-
             <GradientText
-                size='text-5xl'
+                className='text-5xl md:text-7xl'
                 fontWeight='font-bold'
                 colors={GradientColor["green-blue"]}
                 style={{

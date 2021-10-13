@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { MoonIcon, SunIcon } from '@heroicons/react/solid'
 import { ColorMode, useColorMode } from "../hooks/useColorMode";
+import { IconButton } from "./IconButton";
 
 export type HeaderProps = {
     colorMode: ColorMode
@@ -15,21 +16,14 @@ export const Header: FC<HeaderProps> = ({ colorMode }) => {
     }
 
     return (
-        <div className="flex flex-row w-full text-white fixed justify-end p-5">
-            <SunIcon
+        <div className="flex flex-row w-full fixed justify-end p-5">
+            <IconButton
+                className="w-5 "
+                iconClassname="h-5 hover:h-6"
                 onClick={changeMode}
-                className={`cursor-pointer h-5 w-5 bg-transparent transition-all duration-500 ${colorMode === ColorMode.dark ? '' : 'hidden'}`}
-                style={{
-                    filter: 'drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.5)) drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.5))'
-                }}
+                Icon={colorMode === ColorMode.dark ? SunIcon : MoonIcon}
+                colorMode={colorMode}
             />
-
-            <MoonIcon
-                onClick={changeMode}
-                className={`cursor-pointer h-5 w-5 bg-transparent transition-all text-black duration-500 ${colorMode === ColorMode.dark ? 'hidden' : ''}`}
-                style={{
-                    filter: 'drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.6)) drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.6))'
-                }} />
         </div>
     );
 }
