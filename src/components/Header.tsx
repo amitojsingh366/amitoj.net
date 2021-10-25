@@ -1,18 +1,15 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { MoonIcon, SunIcon } from '@heroicons/react/solid'
-import { ColorMode, useColorMode } from "../hooks/useColorMode";
 import { IconButton } from "./IconButton";
+import { ColorMode, ThemeContext } from "../modules/ThemeProvider";
 
-export type HeaderProps = {
-    colorMode: ColorMode
-}
 
-export const Header: FC<HeaderProps> = ({ colorMode }) => {
-
+export const Header: FC = () => {
+    const { colorMode, setColorMode } = useContext(ThemeContext);
     const changeMode = () => {
-        useColorMode.getState().setColorMode({
-            mode: useColorMode.getState().mode === ColorMode.dark ? ColorMode.light : ColorMode.dark
-        })
+        setColorMode(
+            colorMode === ColorMode.dark ? ColorMode.light : ColorMode.dark
+        )
     }
 
     return (
@@ -22,7 +19,6 @@ export const Header: FC<HeaderProps> = ({ colorMode }) => {
                 iconClassname="h-5 hover:h-6"
                 onClick={changeMode}
                 Icon={colorMode === ColorMode.dark ? SunIcon : MoonIcon}
-                colorMode={colorMode}
             />
         </div>
     );

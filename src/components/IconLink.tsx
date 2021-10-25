@@ -1,6 +1,6 @@
-import { ButtonHTMLAttributes, DetailedHTMLProps, FC } from "react";
+import { ButtonHTMLAttributes, DetailedHTMLProps, FC, useContext } from "react";
 import { IconType } from "react-icons";
-import { ColorMode } from "../hooks/useColorMode";
+import { ColorMode, ThemeContext } from "../modules/ThemeProvider";
 
 export type IconLinkProps = DetailedHTMLProps<
     ButtonHTMLAttributes<HTMLButtonElement>,
@@ -8,16 +8,14 @@ export type IconLinkProps = DetailedHTMLProps<
 > & {
     Icon: IconType,
     link: string,
-    colorMode: ColorMode
 }
 
 export const IconLink: FC<IconLinkProps> = ({
     Icon,
     link,
-    colorMode = ColorMode.dark,
     className = ""
 }) => {
-
+    const { colorMode } = useContext(ThemeContext);
     return (
         <a href={link} className={`flex flex-col items-center justify-center ${className}`}>
             <Icon className={`${colorMode === ColorMode.dark ? 'text-white' : 'text-black'} text-xl hover:text-3xl transition-all duration-500`}

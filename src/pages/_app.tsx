@@ -2,22 +2,16 @@ import "../styles/globals.css";
 import Head from 'next/head';
 import { AppProps } from "next/app";
 import ReactModal from 'react-modal';
-import { ColorMode, useColorMode } from "../hooks/useColorMode";
 import { useEffect } from "react";
+import { ThemeProvider } from "../modules/ThemeProvider";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
-  const colorMode = useColorMode().mode;
-
   useEffect(() => {
-    if (!document) return;
     ReactModal.setAppElement("#__next");
-    colorMode === ColorMode.dark ?
-      document.documentElement.classList.add(ColorMode.dark) :
-      document.documentElement.classList.remove(ColorMode.dark)
-  }, [colorMode])
+  }, [])
 
   return (
-    <>
+    <ThemeProvider>
       <Head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -37,5 +31,5 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <meta name="theme-color" content="#111827" />
       </Head>
       <Component {...pageProps} />
-    </>);
+    </ThemeProvider>);
 }
