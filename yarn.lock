@@ -1789,6 +1789,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"amitoj.net@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "amitoj.net@workspace:."
+  dependencies:
+    "@heroicons/react": ^1.0.4
+    "@types/node": ^16.10.5
+    "@types/react": ^17.0.29
+    "@types/react-modal": ^3.12.1
+    autoprefixer: ^10.3.7
+    next: 11.1.2
+    next-pwa: ^5.3.1
+    postcss: ^8.3.9
+    react: 17.0.2
+    react-dom: 17.0.2
+    react-icons: ^4.3.1
+    react-modal: ^3.14.3
+    tailwindcss: ^2.2.16
+    typescript: ^4.4.4
+    zustand: ^3.5.13
+  languageName: unknown
+  linkType: soft
+
 "anser@npm:1.4.9":
   version: 1.4.9
   resolution: "anser@npm:1.4.9"
@@ -4546,28 +4568,6 @@ __metadata:
   checksum: c5a6d01b6d60de6e94bed11b199b8adb656521fed4abe0e816bec7991e8ff435006ef226ded40a0aecd277aa79e7d520e047c24bfb01521a12905b246ddd9177
   languageName: node
   linkType: hard
-
-"nextwind@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "nextwind@workspace:."
-  dependencies:
-    "@heroicons/react": ^1.0.4
-    "@types/node": ^16.10.5
-    "@types/react": ^17.0.29
-    "@types/react-modal": ^3.12.1
-    autoprefixer: ^10.3.7
-    next: 11.1.2
-    next-pwa: ^5.3.1
-    postcss: ^8.3.9
-    react: 17.0.2
-    react-dom: 17.0.2
-    react-icons: ^4.3.1
-    react-modal: ^3.14.3
-    tailwindcss: ^2.2.16
-    typescript: ^4.4.4
-    zustand: ^3.5.13
-  languageName: unknown
-  linkType: soft
 
 "node-emoji@npm:^1.11.0":
   version: 1.11.0
