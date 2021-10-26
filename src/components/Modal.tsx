@@ -2,7 +2,6 @@ import { DetailedHTMLProps, Dispatch, FC, HTMLAttributes, SetStateAction } from 
 import ReactModal from "react-modal";
 import { XCircleIcon } from '@heroicons/react/solid'
 import { IconButton } from "./IconButton";
-import { useColorMode } from "../hooks/useColorMode";
 
 export type ModalProps = DetailedHTMLProps<
     HTMLAttributes<HTMLDivElement>,
@@ -17,7 +16,6 @@ export const Modal: FC<ModalProps> = ({
     setIsOpen,
     children
 }) => {
-    const colorMode = useColorMode().mode;
 
     return (
         <ReactModal
@@ -49,7 +47,6 @@ export const Modal: FC<ModalProps> = ({
         >
             <div className="flex flex-row-reverse h-8">
                 <IconButton
-                    colorMode={colorMode}
                     Icon={XCircleIcon}
                     iconClassname="hover:h-6 h-5"
                     onClick={() => { setIsOpen(false) }} />
