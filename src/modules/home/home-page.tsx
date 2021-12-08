@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { GradientColor, GradientText } from "../../components/GradientText";
-import { FaGithub, FaTwitter, FaDiscord } from 'react-icons/fa';
+import { FaGithub, FaTwitter, FaDiscord, FaPaypal } from 'react-icons/fa';
+import { SiKofi } from 'react-icons/si';
 import { IconLink } from "../../components/IconLink";
 import { IoMdMail } from 'react-icons/io';
 
@@ -21,10 +22,12 @@ export const HomePage: FC = () => {
             </GradientText>
 
             <div className="flex flex-row mt-20 space-x-16 h-10">
-                <IconLink Icon={FaGithub} link="https://github.com/amitojsingh366/" />
-                <IconLink Icon={FaTwitter} link="https://twitter.com/amitojsingh366/" />
-                <IconLink Icon={FaDiscord} link="https://discords.com/bio/p/amitoj" />
-                <IconLink Icon={IoMdMail} link="mailto:amitoj@amitoj.net" />
+                <IconLink Icon={FaGithub} link="https://github.com/amitojsingh366/" title="Check out my GitHub profile" />
+                <IconLink Icon={FaTwitter} link="https://twitter.com/amitojsingh366/" title="Check out my Twitter profile" />
+                <IconLink Icon={FaDiscord} link="https://discords.com/bio/p/amitoj" title="Contact me on Discord" />
+                <IconLink Icon={IoMdMail} link="mailto:amitoj@amitoj.net" title="Contact me via E-Mail" />
+                <IconLink Icon={SiKofi} link="https://ko-fi.com/amitoj" title="Buy me a coffee 💞" />
+                <IconLink Icon={FaPaypal} link="https://paypal.me/amitoj366" title="Support me through PayPal 💞" />
             </div>
         </div>
     )
