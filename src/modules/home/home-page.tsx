@@ -21,7 +21,7 @@ export const HomePage: FC = () => {
                 Amitoj Singh
             </GradientText>
 
-            <div className="flex flex-row mt-20 space-x-16 h-10">
+            <div className="flex flex-row mt-20 space-x-10 md:space-x-16 h-10">
                 <IconLink Icon={FaGithub} link="https://github.com/amitojsingh366/" title="Check out my GitHub profile" />
                 <IconLink Icon={FaTwitter} link="https://twitter.com/amitojsingh366/" title="Check out my Twitter profile" />
                 <IconLink Icon={FaDiscord} link="https://discords.com/bio/p/amitoj" title="Contact me on Discord" />
