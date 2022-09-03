@@ -13,12 +13,18 @@ export const Header: FC = () => {
     }
 
     return (
-        <div className="flex flex-row w-full fixed justify-end p-5">
+        <div className="flex flex-row w-full fixed justify-end p-5 transition-transform">
             <IconButton
-                className="w-5 "
+                className={`w-5 ${colorMode === ColorMode.light && 'w-0 h-0'}`}
                 iconClassname="h-5 hover:h-6"
                 onClick={changeMode}
-                Icon={colorMode === ColorMode.dark ? SunIcon : MoonIcon}
+                Icon={SunIcon}
+            />
+            <IconButton
+                className={`w-5 ${colorMode === ColorMode.dark && 'w-0 h-0'}`}
+                iconClassname="h-5 hover:h-6"
+                onClick={changeMode}
+                Icon={MoonIcon}
             />
         </div>
     );
