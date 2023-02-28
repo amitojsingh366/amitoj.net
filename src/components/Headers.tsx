@@ -18,7 +18,10 @@ export const Headers: FC<HeaderProps> = ({ title, des, image, url }) => {
                 <meta property="og:title" content={title} key="title" />
                 : null}
             {des ?
-                <meta property="og:description" content={des} key="description" />
+                <meta property="og:description" content={des} key="og description" />
+                : null}
+            {des ?
+                <meta property="description" content={des} key="description" />
                 : null}
             {image ?
                 <meta property="og:image" content={image} key="image" />
