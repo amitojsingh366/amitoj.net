@@ -18,7 +18,7 @@ export const HomePage: FC = () => {
                     textShadow: '0px 0px 50px rgba(52, 211, 153, 0.4)'
                 }}
             >
-                Amitoj Singh
+                Amitoj Singh Chopra
             </GradientText>
 
             <div className="flex flex-row mt-20 space-x-10 md:space-x-16 h-10">
