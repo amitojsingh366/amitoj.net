@@ -10,12 +10,12 @@ export const ThemeContext = createContext<{
     colorMode: ColorMode,
     setColorMode: Dispatch<SetStateAction<ColorMode>>
 }>({
-    colorMode: ColorMode.light,
+    colorMode: ColorMode.dark,
     setColorMode: () => { }
 });
 
 export const ThemeProvider: FC = ({ children }) => {
-    const [colorMode, setColorMode] = useState(ColorMode.light);
+    const [colorMode, setColorMode] = useState(ColorMode.dark);
     const colorModeKey = "@app/colorMode";
 
     useEffect(() => {

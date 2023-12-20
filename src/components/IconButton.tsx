@@ -15,20 +15,21 @@ export const IconButton: FC<IconButtonProps> = ({
     onClick,
     className = "",
     title = "",
+    hidden,
     iconClassname = "",
     ...props
 }) => {
     const { colorMode } = useContext(ThemeContext);
     return (
         <button onClick={onClick} title={title} className={`flex flex-col items-center justify-center ${className}`} {...props}>
-            <Icon
+            {!hidden && <Icon
                 title={title}
                 className={`${colorMode === ColorMode.dark ? 'text-white' : 'text-black'} text-xl hover:text-3xl transition-all duration-500 ${iconClassname}`}
                 style={{
                     filter: colorMode === ColorMode.dark ?
                         `drop-shadow(0px 0px 20px rgba(255, 255, 255, 0.5)) drop-shadow(0px 0px 20px rgba(255, 255, 255, 0.5))` :
                         `drop-shadow(0px 0px 20px rgba(0, 0, 0, 0.5)) drop-shadow(0px 0px 20px rgba(0, 0, 0, 0.5))`
-                }} />
+                }} />}
         </button>
     );
 }

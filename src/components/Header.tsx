@@ -1,7 +1,7 @@
 import { FC, useContext } from "react";
-import { MoonIcon, SunIcon } from '@heroicons/react/solid'
 import { IconButton } from "./IconButton";
 import { ColorMode, ThemeContext } from "../modules/ThemeProvider";
+import { IoMdMoon, IoMdSunny } from 'react-icons/io'
 
 
 export const Header: FC = () => {
@@ -14,18 +14,18 @@ export const Header: FC = () => {
 
     return (
         <div className="flex flex-row w-full fixed justify-end p-5 transition-transform">
-            <IconButton
-                className={`w-5 ${colorMode === ColorMode.light && 'w-0 h-0'}`}
+            {colorMode !== ColorMode.light && <IconButton
+                className={`w-5 `}
                 iconClassname="h-5 hover:h-6"
                 onClick={changeMode}
-                Icon={SunIcon}
-            />
-            <IconButton
-                className={`w-5 ${colorMode === ColorMode.dark && 'w-0 h-0'}`}
+                Icon={IoMdSunny}
+            />}
+            {colorMode !== ColorMode.dark && <IconButton
+                className={`w-5 `}
                 iconClassname="h-5 hover:h-6"
                 onClick={changeMode}
-                Icon={MoonIcon}
-            />
+                Icon={IoMdMoon}
+            />}
         </div>
     );
 }

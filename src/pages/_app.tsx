@@ -1,15 +1,9 @@
 import "../styles/globals.css";
 import Head from 'next/head';
 import { AppProps } from "next/app";
-import ReactModal from 'react-modal';
-import { useEffect } from "react";
 import { ThemeProvider } from "../modules/ThemeProvider";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
-  useEffect(() => {
-    ReactModal.setAppElement("#__next");
-  }, [])
-
   return (
     <ThemeProvider>
       <Head>
