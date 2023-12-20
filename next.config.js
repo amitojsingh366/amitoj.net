@@ -2,10 +2,20 @@
 const withPWA = require('next-pwa')
 const runtimeCaching = require('next-pwa/cache')
 const { PHASE_DEVELOPMENT_SERVER } = require('next/constants')
+const { links } = require('./constants')
 
 const base = {
-    reactStrictMode: true
-}
+    reactStrictMode: true,
+    async redirects() {
+        return links.map((link) => {
+            return {
+                source: link.path,
+                destination: link.url,
+                permanent: true,
+            };
+        });
+    },
+};
 
 module.exports = (phase, { defaultConfig }) => {
     if (phase === PHASE_DEVELOPMENT_SERVER) {
