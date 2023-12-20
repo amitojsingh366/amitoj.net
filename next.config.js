@@ -1,7 +1,5 @@
 
-const withPWA = require('next-pwa')
-const runtimeCaching = require('next-pwa/cache')
-const { PHASE_DEVELOPMENT_SERVER } = require('next/constants')
+//const { PHASE_DEVELOPMENT_SERVER } = require('next/constants')
 const { links } = require('./constants')
 
 const base = {
@@ -18,18 +16,8 @@ const base = {
 };
 
 module.exports = (phase, { defaultConfig }) => {
-    if (phase === PHASE_DEVELOPMENT_SERVER) {
-        return {
-            ...base
-            /* development only config options here */
-        }
+    return {
+        ...base
+        /* development only config options here */
     }
-
-    return withPWA({
-        ...base,
-        pwa: {
-            dest: 'public',
-            runtimeCaching,
-        },
-    })
 }
