@@ -13,6 +13,7 @@ export type TextSize = 'text-xs'
     | 'text-7xl'
     | 'text-8xl'
     | 'text-9xl'
+    | string
 
 
 export type FontWeight = 'font-thin'
