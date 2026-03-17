@@ -1,48 +1,56 @@
-import { createContext, Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from "react";
+"use client";
+
+import {
+  createContext,
+  Dispatch,
+  PropsWithChildren,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 export enum ColorMode {
-    light = 'light',
-    dark = 'dark'
+  light = "light",
+  dark = "dark",
 }
 
-
 export const ThemeContext = createContext<{
-    colorMode: ColorMode,
-    setColorMode: Dispatch<SetStateAction<ColorMode>>
+  colorMode: ColorMode;
+  setColorMode: Dispatch<SetStateAction<ColorMode>>;
 }>({
-    colorMode: ColorMode.dark,
-    setColorMode: () => { }
+  colorMode: ColorMode.dark,
+  setColorMode: () => {},
 });
 
-export const ThemeProvider: FC = ({ children }) => {
-    const [colorMode, setColorMode] = useState(ColorMode.dark);
-    const colorModeKey = "@app/colorMode";
+export function ThemeProvider({ children }: PropsWithChildren<object>) {
+  const [colorMode, setColorMode] = useState(ColorMode.dark);
+  const colorModeKey = "@app/colorMode";
 
-    useEffect(() => {
-        const savedColorMode = localStorage.getItem(colorModeKey);
-        if (savedColorMode) setColorMode(savedColorMode as ColorMode)
-    }, [])
+  useEffect(() => {
+    const savedColorMode = localStorage.getItem(colorModeKey);
+    if (savedColorMode) setColorMode(savedColorMode as ColorMode);
+  }, []);
 
+  useEffect(() => {
+    localStorage.setItem(colorModeKey, colorMode);
+    if (!document) return;
+    colorMode === ColorMode.dark
+      ? document.documentElement.classList.add(ColorMode.dark)
+      : document.documentElement.classList.remove(ColorMode.dark);
+  }, [colorMode]);
 
-    useEffect(() => {
-        localStorage.setItem(colorModeKey, colorMode);
-        if (!document) return;
-        colorMode === ColorMode.dark ?
-            document.documentElement.classList.add(ColorMode.dark) :
-            document.documentElement.classList.remove(ColorMode.dark)
-    }, [colorMode])
-
-
-    return (
-        <ThemeContext.Provider
-            value={useMemo(
-                () => ({
-                    colorMode,
-                    setColorMode
-                }),
-                [colorMode]
-            )}>
-            {children}
-        </ThemeContext.Provider>
-    )
+  return (
+    <ThemeContext.Provider
+      value={useMemo(
+        () => ({
+          colorMode,
+          setColorMode,
+        }),
+        [colorMode],
+      )}
+    >
+      {children}
+    </ThemeContext.Provider>
+  );
 }
