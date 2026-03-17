@@ -6,7 +6,7 @@ const gradientClasses =
 
 export function ProjectCard({ project }: { project: Project }) {
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-800/50 p-6 transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-600">
+    <div className="rounded-xl border border-gray-200 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-800/50 p-6 transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-600 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-violet-500/5">
       <div className="flex items-start justify-between mb-3">
         <h3 className={`text-lg font-semibold ${gradientClasses}`}>
           {project.name}

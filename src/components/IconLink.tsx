@@ -1,15 +1,12 @@
 "use client";
 
-import { ButtonHTMLAttributes, DetailedHTMLProps, useContext } from "react";
-import { IconType } from "react-icons";
-import { ColorMode, ThemeContext } from "../modules/ThemeProvider";
+import type { IconType } from "react-icons";
 
-export type IconLinkProps = DetailedHTMLProps<
-  ButtonHTMLAttributes<HTMLAnchorElement>,
-  HTMLAnchorElement
-> & {
+export type IconLinkProps = {
   Icon: IconType;
   link: string;
+  className?: string;
+  title?: string;
 };
 
 export function IconLink({
@@ -18,7 +15,6 @@ export function IconLink({
   className = "",
   title = "",
 }: IconLinkProps) {
-  const { colorMode } = useContext(ThemeContext);
   return (
     <a
       href={link}
@@ -27,13 +23,7 @@ export function IconLink({
     >
       <Icon
         title={title}
-        className={`${colorMode === ColorMode.dark ? "text-white" : "text-black"} text-xl hover:text-3xl transition-all duration-500`}
-        style={{
-          filter:
-            colorMode === ColorMode.dark
-              ? `drop-shadow(0px 0px 20px rgba(255, 255, 255, 0.5)) drop-shadow(0px 0px 20px rgba(255, 255, 255, 0.5))`
-              : `drop-shadow(0px 0px 20px rgba(0, 0, 0, 0.5)) drop-shadow(0px 0px 20px rgba(0, 0, 0, 0.5))`,
-        }}
+        className="text-black dark:text-white text-xl hover:text-3xl transition-all duration-500 drop-shadow-[0_0_20px_rgba(0,0,0,0.5)] dark:drop-shadow-[0_0_20px_rgba(255,255,255,0.5)]"
       />
     </a>
   );

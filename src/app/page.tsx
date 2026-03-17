@@ -2,6 +2,8 @@ import { HeroSection } from "@/components/HeroSection";
 import { ProjectCard } from "@/components/ProjectCard";
 import { ExperienceCard } from "@/components/ExperienceCard";
 import { ScrollHashUpdater } from "@/components/ScrollHashUpdater";
+import { FadeIn } from "@/components/FadeIn";
+import { Footer } from "@/components/Footer";
 import {
   GradientColor,
   GradientDirection,
@@ -20,49 +22,59 @@ export default function Home() {
 
       <section
         id="projects"
-        className="px-6 py-20 min-h-screen max-w-5xl mx-auto flex flex-col justify-center"
+        className="px-6 py-10 min-h-screen max-w-5xl mx-auto flex flex-col justify-center"
         style={{ scrollSnapAlign: "start" }}
       >
-        <GradientText
-          size="text-3xl md:text-4xl"
-          fontWeight="font-bold"
-          colors={GradientColor["violet-cyan"]}
-          direction={GradientDirection.right}
-          className="mb-10"
-          style={glowStyle}
-        >
-          Projects
-        </GradientText>
+        <FadeIn>
+          <GradientText
+            size="text-3xl md:text-4xl"
+            fontWeight="font-bold"
+            colors={GradientColor["violet-cyan"]}
+            direction={GradientDirection.right}
+            className="mb-10"
+            style={glowStyle}
+          >
+            Projects
+          </GradientText>
+        </FadeIn>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {projects.map((project) => (
-            <ProjectCard key={project.name} project={project} />
+          {projects.map((project, i) => (
+            <FadeIn key={project.name} delay={i * 100}>
+              <ProjectCard project={project} />
+            </FadeIn>
           ))}
         </div>
       </section>
 
       <section
         id="experience"
-        className="px-6 py-20 min-h-screen max-w-5xl mx-auto flex flex-col justify-center"
+        className="px-6 py-10 min-h-screen max-w-5xl mx-auto flex flex-col justify-center"
         style={{ scrollSnapAlign: "start" }}
       >
-        <GradientText
-          size="text-3xl md:text-4xl"
-          fontWeight="font-bold"
-          colors={GradientColor["violet-cyan"]}
-          direction={GradientDirection.right}
-          className="mb-10"
-          style={glowStyle}
-        >
-          Experience
-        </GradientText>
+        <FadeIn>
+          <GradientText
+            size="text-3xl md:text-4xl"
+            fontWeight="font-bold"
+            colors={GradientColor["violet-cyan"]}
+            direction={GradientDirection.right}
+            className="mb-10"
+            style={glowStyle}
+          >
+            Experience
+          </GradientText>
+        </FadeIn>
 
         <div className="space-y-6">
-          {experiences.map((exp) => (
-            <ExperienceCard key={exp.company} experience={exp} />
+          {experiences.map((exp, i) => (
+            <FadeIn key={exp.company} delay={i * 100}>
+              <ExperienceCard experience={exp} />
+            </FadeIn>
           ))}
         </div>
       </section>
+
+      <Footer />
     </main>
   );
 }

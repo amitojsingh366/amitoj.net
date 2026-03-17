@@ -2,7 +2,8 @@
 
 import { useContext } from "react";
 import { IconButton } from "./IconButton";
-import { ColorMode, ThemeContext } from "../modules/ThemeProvider";
+import { ColorMode } from "../modules/theme";
+import { ThemeContext } from "../modules/ThemeProvider";
 import { IoMdMoon, IoMdSunny } from "react-icons/io";
 
 export function Header() {

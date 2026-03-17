@@ -7,7 +7,7 @@ const gradientClasses =
 
 export function ExperienceCard({ experience }: { experience: Experience }) {
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-800/50 p-6 transition-all duration-300">
+    <div className="rounded-xl border border-gray-200 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-800/50 p-6 transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-600 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-violet-500/5">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-1">
         <div>
           <h3 className={`text-lg font-semibold ${gradientClasses}`}>

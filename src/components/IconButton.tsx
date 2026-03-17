@@ -2,7 +2,8 @@
 
 import { ButtonHTMLAttributes, DetailedHTMLProps, useContext } from "react";
 import { IconType } from "react-icons";
-import { ColorMode, ThemeContext } from "../modules/ThemeProvider";
+import { ColorMode } from "../modules/theme";
+import { ThemeContext } from "../modules/ThemeProvider";
 
 export type IconButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,

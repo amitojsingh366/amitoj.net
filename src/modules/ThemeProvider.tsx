@@ -2,17 +2,18 @@
 
 import {
   createContext,
-  Dispatch,
-  PropsWithChildren,
-  SetStateAction,
+  type Dispatch,
+  type PropsWithChildren,
+  type SetStateAction,
+  useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
+import { ColorMode, THEME_COOKIE, THEME_LS_KEY } from "./theme";
 
-export enum ColorMode {
-  light = "light",
-  dark = "dark",
+function setCookie(name: string, value: string) {
+  document.cookie = `${name}=${encodeURIComponent(value)};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
 }
 
 export const ThemeContext = createContext<{
@@ -23,32 +24,51 @@ export const ThemeContext = createContext<{
   setColorMode: () => {},
 });
 
-export function ThemeProvider({ children }: PropsWithChildren<object>) {
-  const [colorMode, setColorMode] = useState(ColorMode.dark);
-  const colorModeKey = "@app/colorMode";
+export function ThemeProvider({
+  initialTheme,
+  children,
+}: PropsWithChildren<{ initialTheme: ColorMode }>) {
+  const [colorMode, setColorModeRaw] = useState(initialTheme);
+
+  const setColorMode: Dispatch<SetStateAction<ColorMode>> = useCallback(
+    (action) => {
+      setColorModeRaw((prev) => {
+        const next = typeof action === "function" ? action(prev) : action;
+        setCookie(THEME_COOKIE, next);
+        try {
+          localStorage.setItem(THEME_LS_KEY, next);
+        } catch {}
+        return next;
+      });
+    },
+    [],
+  );
+
+  // Migrate localStorage → cookie for users who had a preference before cookies
+  useEffect(() => {
+    try {
+      const hasCookie = document.cookie.includes(`${THEME_COOKIE}=`);
+      if (!hasCookie) {
+        const saved = localStorage.getItem(THEME_LS_KEY);
+        if (saved === ColorMode.light || saved === ColorMode.dark) {
+          setCookie(THEME_COOKIE, saved);
+          setColorModeRaw(saved);
+        }
+      }
+    } catch {}
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    const savedColorMode = localStorage.getItem(colorModeKey);
-    if (savedColorMode) setColorMode(savedColorMode as ColorMode);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem(colorModeKey, colorMode);
-    if (!document) return;
-    colorMode === ColorMode.dark
-      ? document.documentElement.classList.add(ColorMode.dark)
-      : document.documentElement.classList.remove(ColorMode.dark);
+    if (colorMode === ColorMode.dark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }, [colorMode]);
 
   return (
     <ThemeContext.Provider
-      value={useMemo(
-        () => ({
-          colorMode,
-          setColorMode,
-        }),
-        [colorMode],
-      )}
+      value={useMemo(() => ({ colorMode, setColorMode }), [colorMode, setColorMode])}
     >
       {children}
     </ThemeContext.Provider>
