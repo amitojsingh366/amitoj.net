@@ -35,7 +35,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={theme === ColorMode.dark ? "dark" : ""}
+      className={`snap-y snap-proximity ${theme === ColorMode.dark ? "dark" : ""}`}
       suppressHydrationWarning
     >
       <head>

@@ -2,6 +2,7 @@ import { HeroSection } from "@/components/HeroSection";
 import { ProjectCard } from "@/components/ProjectCard";
 import { ExperienceCard } from "@/components/ExperienceCard";
 import { ScrollHashUpdater } from "@/components/ScrollHashUpdater";
+import { HeroProjectsSnap } from "@/components/HeroProjectsSnap";
 import { FadeIn } from "@/components/FadeIn";
 import { Footer } from "@/components/Footer";
 import {
@@ -18,12 +19,12 @@ export default function Home() {
   return (
     <main>
       <ScrollHashUpdater />
+      <HeroProjectsSnap />
       <HeroSection />
 
       <section
         id="projects"
         className="px-6 py-10 min-h-screen max-w-5xl mx-auto flex flex-col justify-center"
-        style={{ scrollSnapAlign: "start" }}
       >
         <FadeIn>
           <GradientText
@@ -49,8 +50,7 @@ export default function Home() {
 
       <section
         id="experience"
-        className="px-6 py-10 min-h-screen max-w-5xl mx-auto flex flex-col justify-center"
-        style={{ scrollSnapAlign: "start" }}
+        className="px-6 py-10 min-h-screen max-w-5xl mx-auto flex flex-col justify-center snap-start"
       >
         <FadeIn>
           <GradientText

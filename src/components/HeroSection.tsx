@@ -1,15 +1,25 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { GradientColor, GradientText } from "./GradientText";
 import { IconLink } from "./IconLink";
 import { socialLinks } from "@/data/links";
 
 export function HeroSection() {
+  const [showArrow, setShowArrow] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowArrow(window.scrollY < window.innerHeight * 0.5);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <section
       id="home"
-      className="h-screen flex flex-col items-center justify-center relative scroll-snap-align-start"
-      style={{ scrollSnapAlign: "start" }}
+      className="h-screen flex flex-col items-center justify-center relative"
     >
       <GradientText
         size="text-5xl md:text-7xl"
@@ -35,7 +45,10 @@ export function HeroSection() {
 
       <a
         href="#projects"
-        className="absolute bottom-10 animate-bounce-down text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+        className={`animate-bounce-down text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-all duration-300
+          fixed bottom-6 left-1/2 -translate-x-1/2 z-50
+          md:absolute md:bottom-10 md:left-1/2 md:z-auto
+          ${showArrow ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         aria-label="Scroll to projects"
       >
         <svg

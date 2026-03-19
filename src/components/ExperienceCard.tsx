@@ -14,7 +14,7 @@ export function ExperienceCard({ experience }: { experience: Experience }) {
             {experience.role}
           </h3>
           <div className="flex items-center gap-2 mt-0.5">
-            <p className={`text-sm font-medium ${gradientClasses}`}>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
               {experience.company}
             </p>
             <span className="text-gray-400 dark:text-gray-500 text-sm">
