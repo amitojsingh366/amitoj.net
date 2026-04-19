@@ -10,6 +10,17 @@ export interface Experience {
 
 export const experiences: Experience[] = [
   {
+    role: "Web Developer",
+    company: "VIU – Political Studies",
+    location: "Nanaimo, BC",
+    period: "Feb 2026 – Present",
+    bullets: [
+      "Manage CMS repositories and build external-facing web pages for the Political Studies department.",
+      "Evaluate hosting options and coordinate DNS configuration with university IT.",
+      "Write custom CSS/JS enhancements to improve usability and maintain accessibility standards.",
+    ],
+  },
+  {
     role: "Software Engineer (Contract)",
     company: "KeepKey Ltd.",
     location: "Remote (USA)",

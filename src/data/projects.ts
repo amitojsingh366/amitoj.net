@@ -9,6 +9,30 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    name: "Signalhouse",
+    year: 2026,
+    description:
+      "Engineered a swing-trading orchestration platform scanning over 330 TSX/CDR/ETF symbols every 15 minutes. Built a multi-stage analysis pipeline combining technical indicators, sentiment inputs, and commodity-correlation signals across a web dashboard, iOS alert app, and Discord bot integrations.",
+    tech: [
+      "Next.js 14",
+      "FastAPI",
+      "SwiftUI",
+      "PostgreSQL",
+      "TA-Lib",
+      "Discord.js",
+      "Docker",
+    ],
+    github: "https://github.com/amitojsingh366/signalhouse",
+  },
+  {
+    name: "Saakhi",
+    year: 2022,
+    description:
+      "Served as Technical Lead for a cross-platform Sikh education app centered on Ik Saakhi Har Roz, featuring Sikh history stories, Nitnem/Gurbani sections, and Gurmat Q&A. Drove major updates including a serverless architecture shift, smaller app size, performance improvements, and refreshed UI.",
+    tech: ["iOS", "Android", "Serverless", "Mobile UI", "Education"],
+    link: "https://www.sikhsaakhi.com/download",
+  },
+  {
     name: "Neurodrive",
     year: 2024,
     description:
