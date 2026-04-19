@@ -1,4 +1,4 @@
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaInstagram } from "react-icons/fa";
 import type { Experience } from "@/data/experience";
 import { FiGlobe } from "react-icons/fi";
 
@@ -40,6 +40,17 @@ export function ExperienceCard({ experience }: { experience: Experience }) {
                 title="View on GitHub"
               >
                 <FaGithub className="w-4 h-4" />
+              </a>
+            )}
+            {experience.instagram && (
+              <a
+                href={experience.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                title={`Visit ${experience.company} on Instagram`}
+              >
+                <FaInstagram className="w-4 h-4" />
               </a>
             )}
           </div>
