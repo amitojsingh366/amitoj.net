@@ -39,9 +39,13 @@ export default function Home() {
           </GradientText>
         </FadeIn>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="columns-1 md:columns-2">
           {projects.map((project, i) => (
-            <FadeIn key={project.name} delay={i * 100}>
+            <FadeIn
+              key={project.name}
+              delay={i * 100}
+              className="mb-6 break-inside-avoid"
+            >
               <ProjectCard project={project} />
             </FadeIn>
           ))}
@@ -67,7 +71,7 @@ export default function Home() {
 
         <div className="space-y-6">
           {experiences.map((exp, i) => (
-            <FadeIn key={exp.company} delay={i * 100}>
+            <FadeIn key={`${exp.company}-${exp.role}`} delay={i * 100}>
               <ExperienceCard experience={exp} />
             </FadeIn>
           ))}

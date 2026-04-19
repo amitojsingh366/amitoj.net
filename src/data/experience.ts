@@ -11,7 +11,7 @@ export interface Experience {
 export const experiences: Experience[] = [
   {
     role: "Web Developer",
-    company: "VIU – Political Studies",
+    company: "Vancouver Island University",
     location: "Nanaimo, BC",
     period: "Feb 2026 – Present",
     bullets: [
