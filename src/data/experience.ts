@@ -5,10 +5,22 @@ export interface Experience {
   period: string;
   bullets: string[];
   link?: string;
+  instagram?: string;
   github?: string;
 }
 
 export const experiences: Experience[] = [
+  {
+    role: "Web Developer",
+    company: "Vancouver Island University",
+    location: "Nanaimo, BC",
+    period: "Feb 2026 – Present",
+    bullets: [
+      "Manage CMS repositories and build external-facing web pages for the Political Studies department.",
+      "Evaluate hosting options and coordinate DNS configuration with university IT.",
+      "Write custom CSS/JS enhancements to improve usability and maintain accessibility standards.",
+    ],
+  },
   {
     role: "Software Engineer (Contract)",
     company: "KeepKey Ltd.",
@@ -52,6 +64,7 @@ export const experiences: Experience[] = [
     company: "TEDxYouth@NMS Bahrain",
     location: "Bahrain",
     period: "Jan 2022 \u2013 Jun 2022",
+    instagram: "https://www.instagram.com/tedxyouthnmsbh/",
     bullets: [
       "Led digital operations for event execution, web development, and technical infrastructure.",
       "Increased event attendance by 30% through targeted online campaigns and automated registration workflows.",
@@ -63,6 +76,7 @@ export const experiences: Experience[] = [
     company: "New Millennium Model United Nations",
     location: "Bahrain",
     period: "Sep 2021 \u2013 Jan 2022",
+    instagram: "https://www.instagram.com/nmmun202122/",
     bullets: [
       "Oversaw IT systems and web platform redesign, enhancing accessibility and visual appeal.",
       "Integrated Microsoft Teams and collaborative tools to streamline internal communication.",

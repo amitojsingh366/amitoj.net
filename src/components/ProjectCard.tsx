@@ -1,5 +1,6 @@
 import { FaGithub } from "react-icons/fa";
 import type { Project } from "@/data/projects";
+import { FiGlobe } from "react-icons/fi";
 
 const gradientClasses =
   "text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-blue-400 to-cyan-400";
@@ -26,12 +27,31 @@ export function ProjectCard({ project }: { project: Project }) {
               <FaGithub className="w-5 h-5" />
             </a>
           )}
+          {project.link && (
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              title={`Visit ${project.name}`}
+            >
+              <FiGlobe className="w-5 h-5" />
+            </a>
+          )}
         </div>
       </div>
 
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-        {project.description}
-      </p>
+      <ul className="mt-4 mb-4 space-y-2">
+        {project.bullets.map((bullet, i) => (
+          <li
+            key={i}
+            className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed flex"
+          >
+            <span className="text-violet-500 mr-2 mt-0.5 shrink-0">&bull;</span>
+            <span>{bullet}</span>
+          </li>
+        ))}
+      </ul>
 
       <div className="flex flex-wrap gap-2">
         {project.tech.map((t) => (
