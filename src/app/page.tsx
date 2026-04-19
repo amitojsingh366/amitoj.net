@@ -39,13 +39,9 @@ export default function Home() {
           </GradientText>
         </FadeIn>
 
-        <div className="columns-1 md:columns-2">
+        <div className="space-y-6">
           {projects.map((project, i) => (
-            <FadeIn
-              key={project.name}
-              delay={i * 100}
-              className="mb-6 break-inside-avoid"
-            >
+            <FadeIn key={project.name} delay={i * 100}>
               <ProjectCard project={project} />
             </FadeIn>
           ))}
