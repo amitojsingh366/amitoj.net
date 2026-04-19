@@ -41,9 +41,17 @@ export function ProjectCard({ project }: { project: Project }) {
         </div>
       </div>
 
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-        {project.description}
-      </p>
+      <ul className="mt-4 mb-4 space-y-2">
+        {project.bullets.map((bullet, i) => (
+          <li
+            key={i}
+            className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed flex"
+          >
+            <span className="text-violet-500 mr-2 mt-0.5 shrink-0">&bull;</span>
+            <span>{bullet}</span>
+          </li>
+        ))}
+      </ul>
 
       <div className="flex flex-wrap gap-2">
         {project.tech.map((t) => (
