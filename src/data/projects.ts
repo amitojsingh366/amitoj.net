@@ -33,9 +33,17 @@ export const projects: Project[] = [
     bullets: [
       "Served as Technical Lead for a cross-platform Sikh education app centered on Ik Saakhi Har Roz.",
       "Shipped content modules for Sikh history stories, Nitnem/Gurbani sections, and Gurmat Q&A.",
-      "Drove major updates including serverless architecture changes, smaller app size, performance improvements, and a refreshed UI.",
+      "Built and maintained a full Cloudflare stack using Workers, D1, and R2, alongside major app updates for smaller size, performance improvements, and a refreshed UI.",
     ],
-    tech: ["iOS", "Android", "Serverless", "Mobile UI", "Education"],
+    tech: [
+      "iOS",
+      "Android",
+      "Cloudflare Workers",
+      "Cloudflare D1",
+      "Cloudflare R2",
+      "Mobile UI",
+      "Education",
+    ],
     link: "https://www.sikhsaakhi.com/download",
   },
   {
