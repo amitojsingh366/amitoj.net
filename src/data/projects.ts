@@ -1,6 +1,9 @@
 export interface Project {
   name: string;
+  displayLines: string[];
+  subtitle: string[];
   year: number;
+  period?: string;
   bullets: string[];
   tech: string[];
   github?: string;
@@ -10,6 +13,11 @@ export interface Project {
 export const projects: Project[] = [
   {
     name: "Signalhouse",
+    displayLines: ["Signal", "House"],
+    subtitle: [
+      "Swing-trading orchestration",
+      "Web dashboard · iOS app · Discord bots",
+    ],
     year: 2026,
     bullets: [
       "Engineered a swing-trading orchestration platform scanning over 330 TSX/CDR/ETF symbols every 15 minutes.",
@@ -29,7 +37,10 @@ export const projects: Project[] = [
   },
   {
     name: "Saakhi",
+    displayLines: ["Saakhi"],
+    subtitle: ["Technical lead", "Sikh education app · Ik Saakhi Har Roz"],
     year: 2022,
+    period: "2022 — Present",
     bullets: [
       "Served as Technical Lead for a cross-platform Sikh education app centered on Ik Saakhi Har Roz.",
       "Shipped content modules for Sikh history stories, Nitnem/Gurbani sections, and Gurmat Q&A.",
@@ -48,6 +59,8 @@ export const projects: Project[] = [
   },
   {
     name: "Neurodrive",
+    displayLines: ["Neuro", "Drive"],
+    subtitle: ["BCI-controlled racing game", "Muse 2 EEG · Unity"],
     year: 2024,
     bullets: [
       "Built a BCI-controlled racing game in Unity using Muse 2 EEG signals for velocity control.",
@@ -57,6 +70,8 @@ export const projects: Project[] = [
   },
   {
     name: "HiddenFrame",
+    displayLines: ["Hidden", "Frame"],
+    subtitle: ["Full-stack steganography tool", "C++ pipeline · Remix frontend"],
     year: 2024,
     bullets: [
       "Developed a full-stack steganography tool with C++ image processing, Crow API services, and a Remix.js frontend.",
@@ -67,6 +82,8 @@ export const projects: Project[] = [
   },
   {
     name: "Arch Homelab",
+    displayLines: ["Arch", "Homelab"],
+    subtitle: ["Hardened self-hosted infrastructure", "Media · DNS · storage"],
     year: 2025,
     bullets: [
       "Architected and maintained a hardened Arch Linux server running a fully Dockerized stack for media, DNS, and storage.",
@@ -76,6 +93,8 @@ export const projects: Project[] = [
   },
   {
     name: "RPi iPod Emulator",
+    displayLines: ["RPi iPod", "Emulator"],
+    subtitle: ["Bluetooth-to-USB bridge", "iPod Accessory Protocol"],
     year: 2024,
     bullets: [
       "Engineered a Bluetooth-to-USB bridge on Raspberry Pi to emulate the iPod Accessory Protocol.",
@@ -85,6 +104,8 @@ export const projects: Project[] = [
   },
   {
     name: "GPT-3 Discord Bot",
+    displayLines: ["GPT-3", "Bot"],
+    subtitle: ["Context-aware Discord chatbot", "Shipped before ChatGPT launched"],
     year: 2022,
     bullets: [
       "Built a context-aware chatbot with Node.js and discord.js before the ChatGPT web release.",

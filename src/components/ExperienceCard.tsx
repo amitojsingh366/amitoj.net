@@ -1,78 +1,45 @@
-import { FaGithub, FaInstagram } from "react-icons/fa";
 import type { Experience } from "@/data/experience";
-import { FiGlobe } from "react-icons/fi";
-
-const gradientClasses =
-  "text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-blue-400 to-cyan-400";
 
 export function ExperienceCard({ experience }: { experience: Experience }) {
+  const links = [
+    experience.link && { label: "Site", url: experience.link },
+    experience.github && { label: "Repo", url: experience.github },
+    experience.instagram && { label: "Instagram", url: experience.instagram },
+  ].filter(Boolean) as { label: string; url: string }[];
+
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-800/50 p-6 transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-600 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-violet-500/5">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-1">
-        <div>
-          <h3 className={`text-lg font-semibold ${gradientClasses}`}>
-            {experience.role}
-          </h3>
-          <div className="flex items-center gap-2 mt-0.5">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-              {experience.company}
-            </p>
-            <span className="text-gray-400 dark:text-gray-500 text-sm">
-              &middot; {experience.location}
-            </span>
-            {experience.link && (
-              <a
-                href={experience.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-                title={`Visit ${experience.company}`}
-              >
-                <FiGlobe className="w-4 h-4" />
-              </a>
-            )}
-            {experience.github && (
-              <a
-                href={experience.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-                title="View on GitHub"
-              >
-                <FaGithub className="w-4 h-4" />
-              </a>
-            )}
-            {experience.instagram && (
-              <a
-                href={experience.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-                title={`Visit ${experience.company} on Instagram`}
-              >
-                <FaInstagram className="w-4 h-4" />
-              </a>
-            )}
-          </div>
+    <article className="experience-entry" data-reveal="">
+      <div className="experience-entry__meta">
+        <div className="entry-index">
+          <span>{experience.period}</span>
         </div>
-        <span className="text-sm text-gray-500 dark:text-gray-400 mt-1 sm:mt-0 whitespace-nowrap">
-          {experience.period}
-        </span>
+        <h3 className="experience-entry__company">{experience.company}</h3>
+        <p>{experience.location}</p>
+        {links.length > 0 && (
+          <div className="experience-entry__links">
+            {links.map((link) => (
+              <a
+                key={link.label}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>{link.label}</span>
+                <span>↗</span>
+              </a>
+            ))}
+          </div>
+        )}
       </div>
 
-      <ul className="mt-4 space-y-2">
-        {experience.bullets.map((bullet, i) => (
-          <li
-            key={i}
-            className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed flex"
-          >
-            <span className="text-violet-500 mr-2 mt-0.5 shrink-0">
-              &bull;
-            </span>
-            <span>{bullet}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+      <div className="experience-entry__details">
+        <h3>{experience.role}</h3>
+        <ul>
+          {experience.bullets.map((bullet) => (
+            <li key={bullet}>{bullet}</li>
+          ))}
+        </ul>
+      </div>
+    </article>
   );
 }

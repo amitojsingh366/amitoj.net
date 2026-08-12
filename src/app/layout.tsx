@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
-import { Montserrat } from "next/font/google";
-import { ColorMode } from "@/modules/theme";
-import { ThemeProvider } from "@/modules/ThemeProvider";
-import { Header } from "@/components/Header";
+import localFont from "next/font/local";
 import "@/styles/globals.css";
 
-const montserrat = Montserrat({ subsets: ["latin"] });
+const jetBrainsMono = localFont({
+  src: "../../public/fonts/jetbrains-mono-latin.woff2",
+  weight: "300 800",
+  style: "normal",
+  display: "swap",
+  variable: "--font-jetbrains-mono",
+});
 
 export const metadata: Metadata = {
   title: "Amitoj Singh",
@@ -22,37 +24,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const themeCookie = cookieStore.get("theme")?.value;
-  const theme =
-    themeCookie === ColorMode.light ? ColorMode.light : ColorMode.dark;
-
   return (
-    <html
-      lang="en"
-      className={`snap-y snap-proximity ${theme === ColorMode.dark ? "dark" : ""}`}
-      suppressHydrationWarning
-    >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var c=document.cookie.match(/(?:^|; )theme=([^;]*)/);var t=c?decodeURIComponent(c[1]):null;if(!t){t=localStorage.getItem('@app/colorMode')}if(t==='light'){document.documentElement.classList.remove('dark')}else{document.documentElement.classList.add('dark')}}catch(e){}})()`,
-          }}
-        />
-      </head>
-      <body
-        className={`${montserrat.className} bg-white dark:bg-gray-900 transition-colors duration-500`}
-      >
-        <ThemeProvider initialTheme={theme}>
-          <Header />
-          {children}
-        </ThemeProvider>
-      </body>
+    <html lang="en" className={jetBrainsMono.variable}>
+      <body className={jetBrainsMono.className}>{children}</body>
     </html>
   );
 }
