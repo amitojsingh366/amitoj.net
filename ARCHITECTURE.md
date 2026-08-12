@@ -989,8 +989,13 @@ page becomes visible again.
 
 The portrait is not a bitmap checked into a component. `portrait.ts` contains a
 95,680-character custom-base64 luminance mask with 320 columns, 299 rows, and a
-0.38 tonal pivot. The engine resamples it to the current host, applies blur,
-unsharp contrast, four-level quantization, and Floyd–Steinberg diffusion.
+0.38 tonal pivot. All 95,680 samples are present, including 58,033 nonzero
+samples. The engine follows the reference pipeline exactly: `(code - 1) / 62`
+luminance decoding, area-averaged resampling with a 50% occupancy mask, 5×5
+blur, 0.55 unsharp contrast, pivot-based tonal remapping, four-level
+quantization, and masked Floyd–Steinberg diffusion. Portrait cells also retain
+the reference-specific 2px gap at a 6px cell size, with proportionally smaller
+gaps when the portrait grid is subdivided on narrow screens.
 
 JetBrains Mono's Latin variable WOFF2 is stored locally in
 `public/fonts/jetbrains-mono-latin.woff2`. This removes the Google Fonts build
@@ -1006,7 +1011,7 @@ same stable asset.
 - All project, experience, and link content remains local and server rendered.
 - No API, CMS, client fetch, loading waterfall, or hydration-owned content was
   introduced.
-- The generated route is 36.6 kB with 139 kB first-load JavaScript in the
+- The generated route is 36.9 kB with 139 kB first-load JavaScript in the
   verified Next.js 15.5.13 production build.
 
 ### Verification completed

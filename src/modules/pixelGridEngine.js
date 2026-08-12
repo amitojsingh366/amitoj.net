@@ -103,6 +103,10 @@ export class PixelGridEngine {
       this.wrapper.style.willChange = "auto";
     }
     if (this.spacer) this.spacer.style.display = "";
+    if (this.portraitHost) {
+      this.portraitHost.style.height = "";
+      this.portraitHost.style.aspectRatio = "";
+    }
     for (const block of document.querySelectorAll("[data-reveal]")) {
       block.style.opacity = "";
       block.style.transform = "";
@@ -813,29 +817,67 @@ export class PixelGridEngine {
     if (!this.portraitHost) return null;
     const hostRect = this.portraitHost.getBoundingClientRect();
     if (!hostRect.width || !hostRect.height) return null;
-    const columns = Math.max(150, Math.floor(hostRect.width / this.cell));
-    const rows = Math.round(columns * portraitData.rows / portraitData.cols);
-    const source = new Float32Array(portraitData.cols * portraitData.rows);
-    for (let index = 0; index < portraitData.data.length; index += 1) {
-      source[index] = Math.max(0, ALPHABET.indexOf(portraitData.data[index])) / 63;
-    }
 
-    const values = new Float32Array(columns * rows);
-    for (let row = 0; row < rows; row += 1) {
-      for (let column = 0; column < columns; column += 1) {
-        const sourceX = Math.min(
-          portraitData.cols - 1,
-          Math.floor((column / columns) * portraitData.cols),
-        );
-        const sourceY = Math.min(
-          portraitData.rows - 1,
-          Math.floor((row / rows) * portraitData.rows),
-        );
-        values[row * columns + column] = source[sourceY * portraitData.cols + sourceX];
+    let portraitCell = this.cell;
+    while (
+      Math.floor(hostRect.width / portraitCell) < 150 &&
+      portraitCell > 1.5
+    ) {
+      portraitCell /= 2;
+    }
+    const columns = Math.floor(hostRect.width / portraitCell);
+    const rows = Math.round(columns * portraitData.rows / portraitData.cols);
+    const sourceLength = portraitData.cols * portraitData.rows;
+    const sourceLuminance = new Float32Array(sourceLength);
+    const sourceMask = new Uint8Array(sourceLength);
+    for (let index = 0; index < sourceLength; index += 1) {
+      const encoded = Math.max(0, ALPHABET.indexOf(portraitData.data[index]));
+      if (encoded > 0) {
+        sourceMask[index] = 1;
+        sourceLuminance[index] = (encoded - 1) / 62;
       }
     }
 
-    const blurred = new Float32Array(values.length);
+    const luminance = new Float32Array(columns * rows);
+    const occupied = new Uint8Array(columns * rows);
+    for (let row = 0; row < rows; row += 1) {
+      const sourceTop = Math.floor((row * portraitData.rows) / rows);
+      const sourceBottom = Math.max(
+        Math.floor(((row + 1) * portraitData.rows) / rows),
+        sourceTop + 1,
+      );
+      for (let column = 0; column < columns; column += 1) {
+        const sourceLeft = Math.floor(
+          (column * portraitData.cols) / columns,
+        );
+        const sourceRight = Math.max(
+          Math.floor(((column + 1) * portraitData.cols) / columns),
+          sourceLeft + 1,
+        );
+        let sum = 0;
+        let hits = 0;
+        let samples = 0;
+        for (let sourceY = sourceTop; sourceY < sourceBottom; sourceY += 1) {
+          for (
+            let sourceX = sourceLeft;
+            sourceX < sourceRight;
+            sourceX += 1
+          ) {
+            const sourceIndex = sourceY * portraitData.cols + sourceX;
+            samples += 1;
+            if (sourceMask[sourceIndex]) {
+              sum += sourceLuminance[sourceIndex];
+              hits += 1;
+            }
+          }
+        }
+        const index = row * columns + column;
+        occupied[index] = hits / samples >= 0.5 ? 1 : 0;
+        luminance[index] = hits ? sum / hits : 0;
+      }
+    }
+
+    const blurred = new Float32Array(luminance.length);
     for (let row = 0; row < rows; row += 1) {
       for (let column = 0; column < columns; column += 1) {
         let total = 0;
@@ -845,7 +887,7 @@ export class PixelGridEngine {
             const x = column + dx;
             const y = row + dy;
             if (x < 0 || x >= columns || y < 0 || y >= rows) continue;
-            total += values[y * columns + x];
+            total += luminance[y * columns + x];
             count += 1;
           }
         }
@@ -853,26 +895,32 @@ export class PixelGridEngine {
       }
     }
 
-    const levels = new Uint8Array(values.length);
-    const error = new Float32Array(values);
+    const diffusion = new Float32Array(luminance.length);
+    for (let index = 0; index < diffusion.length; index += 1) {
+      const value =
+        luminance[index] + 0.55 * (luminance[index] - blurred[index]);
+      diffusion[index] = Math.max(
+        0,
+        Math.min(1, 0.5 + (value - portraitData.pivot) * 1.7),
+      );
+    }
+
+    const levels = new Uint8Array(luminance.length);
     for (let row = 0; row < rows; row += 1) {
       for (let column = 0; column < columns; column += 1) {
         const index = row * columns + column;
-        if (values[index] <= 0) continue;
-        const sharpened = values[index] + 0.55 * (values[index] - blurred[index]);
-        const contrasted = Math.max(
-          0,
-          Math.min(1, 0.5 + (sharpened - portraitData.pivot) * 1.7 + error[index]),
-        );
-        const level = Math.max(1, Math.min(4, Math.round(contrasted * 3) + 1));
+        if (!occupied[index]) continue;
+        const value = Math.max(0, Math.min(1, diffusion[index]));
+        const level = Math.max(1, Math.min(4, Math.round(value * 3) + 1));
         levels[index] = level;
         const quantized = (level - 1) / 3;
-        const difference = contrasted - quantized;
+        const difference = value - quantized;
         const push = (dx, dy, factor) => {
           const x = column + dx;
           const y = row + dy;
           if (x >= 0 && x < columns && y >= 0 && y < rows) {
-            error[y * columns + x] += difference * factor;
+            const target = y * columns + x;
+            if (occupied[target]) diffusion[target] += difference * factor;
           }
         };
         push(1, 0, 7 / 16);
@@ -882,12 +930,43 @@ export class PixelGridEngine {
       }
     }
 
+    const scale = this.dpr;
+    const scaledCell = portraitCell * scale;
+    const portraitGap =
+      portraitCell >= 6 ? 2 : portraitCell >= 3 ? 1 : 0.5;
+    const square = Math.max(1, (portraitCell - portraitGap) * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(columns * scaledCell);
+    canvas.height = Math.round(rows * scaledCell);
+    const context = canvas.getContext("2d");
+    if (!context) return null;
+
+    for (let level = 1; level <= 4; level += 1) {
+      context.fillStyle = this.ramp[level];
+      context.beginPath();
+      for (let row = 0; row < rows; row += 1) {
+        for (let column = 0; column < columns; column += 1) {
+          if (levels[row * columns + column] !== level) continue;
+          context.rect(
+            Math.round(column * scaledCell),
+            Math.round(row * scaledCell),
+            square,
+            square,
+          );
+        }
+      }
+      context.fill();
+    }
+
+    this.portraitHost.style.height = `${rows * portraitCell}px`;
+    this.portraitHost.style.aspectRatio = "auto";
+
     return {
+      canvas,
       columns,
       rows,
       levels,
-      cellWidth: hostRect.width / columns,
-      cellHeight: hostRect.height / rows,
+      cell: portraitCell,
     };
   }
 
@@ -903,21 +982,11 @@ export class PixelGridEngine {
 
     context.save();
     context.globalAlpha = 0.22;
-    for (let row = 0; row < portrait.rows; row += 1) {
-      const y = rect.top + row * portrait.cellHeight;
-      if (y > this.height || y + portrait.cellHeight < 0) continue;
-      for (let column = 0; column < portrait.columns; column += 1) {
-        const level = portrait.levels[row * portrait.columns + column];
-        if (!level) continue;
-        context.fillStyle = this.ramp[level];
-        context.fillRect(
-          Math.round((rect.left + column * portrait.cellWidth) * scale),
-          Math.round(y * scale),
-          Math.max(1, (portrait.cellWidth - 1) * scale),
-          Math.max(1, (portrait.cellHeight - 1) * scale),
-        );
-      }
-    }
+    context.drawImage(
+      portrait.canvas,
+      Math.round(rect.left * scale),
+      Math.round(rect.top * scale),
+    );
     context.restore();
 
     context.save();
@@ -928,14 +997,16 @@ export class PixelGridEngine {
       const column = index % portrait.columns;
       const level = portrait.levels[index];
       if (!level) continue;
-      const y = rect.top + row * portrait.cellHeight;
-      if (y > this.height || y + portrait.cellHeight < 0) continue;
+      const y = rect.top + row * portrait.cell;
+      if (y > this.height || y + portrait.cell < 0) continue;
+      const portraitGap =
+        portrait.cell >= 6 ? 2 : portrait.cell >= 3 ? 1 : 0.5;
       context.fillStyle = this.ramp[level];
       context.fillRect(
-        Math.round((rect.left + column * portrait.cellWidth) * scale),
+        Math.round((rect.left + column * portrait.cell) * scale),
         Math.round(y * scale),
-        Math.max(1, (portrait.cellWidth - 1) * scale),
-        Math.max(1, (portrait.cellHeight - 1) * scale),
+        Math.max(1, (portrait.cell - portraitGap) * scale),
+        Math.max(1, (portrait.cell - portraitGap) * scale),
       );
     }
     context.restore();
