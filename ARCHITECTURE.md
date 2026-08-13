@@ -936,6 +936,38 @@ fade-in component, and icon wrappers were removed. They either conflicted with
 the reference interaction model or existed only to support the retired theme
 system.
 
+### Styling contract
+
+Component styling must be authored with Tailwind utilities directly in each
+component's `className`. Layout, spacing, sizing, typography, color,
+responsive behavior, and interaction states belong beside the markup they
+style. Do not introduce semantic/BEM class names and implement them in
+`globals.css`, and do not use `@apply` to recreate a parallel component-class
+system.
+
+`src/styles/globals.css` is intentionally limited to concerns that are truly
+document-wide or cannot live on one element:
+
+- the Tailwind import;
+- shared CSS custom properties used by both Tailwind utilities and the canvas
+  engine;
+- base document, selection, and focus-visible behavior;
+- shared keyframe definitions;
+- the `.pixel-grid-ready [data-cell]` canvas handoff;
+- reduced-motion and forced-colors fallbacks.
+
+Stable `data-*` attributes are reserved for `PixelGridEngine` measurement and
+rendering hooks. They are not an alternative styling class system. Responsive
+variants and arbitrary values should remain inline as Tailwind utilities so a
+component's visual behavior can be understood without searching a global
+stylesheet.
+
+Typography must use Tailwind's named, relative type scale (`text-xs` through
+`text-9xl`) and standard breakpoint variants such as `sm:`, `md:`, `lg:`, and
+`xl:`. Do not size type with pixel-valued arbitrary utilities, viewport math,
+or `clamp()`. Prefer the closest named Tailwind size and move to the next named
+step at a standard breakpoint.
+
 ### Authoritative visual configuration
 
 The client island passes every behavior explicitly rather than relying on
@@ -943,7 +975,7 @@ bundle/runtime fallbacks:
 
 | Setting | Implemented value |
 |---|---|
-| Hero | Bottom stack |
+| Hero | Full-viewport centered, two-line identity |
 | Render scope | Display type only |
 | Desktop cell | 6px with 1px gap |
 | Narrow cell | 5px below 760px |

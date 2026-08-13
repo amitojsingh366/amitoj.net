@@ -17,10 +17,10 @@ const DEFAULTS = {
 };
 
 const ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
-// The reference button fill uses only the three intermediate violet levels:
-// every cell is active, while neither the background nor maximum-white level
-// can be selected. Repetition preserves the reference's 2/7, 3/7, 2/7 mix.
-const BUTTON_HOVER_LEVELS = [3, 3, 2, 2, 2, 1, 1];
+// Interactive fills use only the three intermediate violet levels: every cell
+// is active, while neither the background nor maximum-white level can be
+// selected. Repetition preserves the reference button's 2/7, 3/7, 2/7 mix.
+const INTERACTIVE_HOVER_LEVELS = [3, 3, 2, 2, 2, 1, 1];
 
 export class PixelGridEngine {
   constructor(config = {}) {
@@ -64,7 +64,7 @@ export class PixelGridEngine {
     this.coarsePointer = window.matchMedia(
       "(hover: none), (pointer: coarse)",
     ).matches;
-    this.smooth = !this.reducedMotion && !this.coarsePointer;
+    this.smooth = !this.reducedMotion;
     this.currentY = window.scrollY;
     this.targetY = this.currentY;
     this.brushRadius = this.config.brushRadius;
@@ -199,8 +199,10 @@ export class PixelGridEngine {
 
     if (window.ResizeObserver) {
       this.resizeObserver = new ResizeObserver(() => {
-        const width = Math.round(this.canvas.getBoundingClientRect().width);
-        if (width && width !== this.width) {
+        const rect = this.canvas.getBoundingClientRect();
+        const width = Math.round(rect.width);
+        const height = Math.round(rect.height);
+        if (width && height && (width !== this.width || height !== this.height)) {
           this.resize();
           this.requestFrame();
         }
@@ -630,14 +632,7 @@ export class PixelGridEngine {
             if (x * x + y * y > 1) continue;
           }
           const random = (this.hash(column + tick, row - tick) + tick) % 7;
-          if (!bordered && random > 4) continue;
-          const level = bordered
-            ? BUTTON_HOVER_LEVELS[random]
-            : random < 2
-              ? 4
-              : random < 4
-                ? 3
-                : 2;
+          const level = INTERACTIVE_HOVER_LEVELS[random];
           context.fillStyle = this.ramp[level];
           context.fillRect(
             Math.round(column * this.cell * scale),

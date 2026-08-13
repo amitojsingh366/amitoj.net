@@ -22,7 +22,7 @@ export const profile: Profile = {
   initials: "A/S",
   availability: "Available for full-time SWE · 2026",
   description:
-    "Software engineer in Nanaimo, BC. I build systems end to end — trading pipelines, hardware bridges, desktop wallets, mobile apps — and I like owning the parts most people skip: releases, DNS, uptime.",
+    "Software engineer from Vancouver Island. I build systems end to end — trading pipelines, hardware bridges, desktop wallets, mobile apps — and I like owning the parts most people skip: releases, DNS, uptime.",
   stats: [
     { value: "230K+", label: "LOC merged, open source" },
     { value: "06", label: "Years shipping" },

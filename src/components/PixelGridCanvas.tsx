@@ -27,8 +27,16 @@ export function PixelGridCanvas() {
 
   return (
     <>
-      <canvas className="pixel-canvas" data-grid="" aria-hidden="true" />
-      <div className="scroll-progress" data-progress="" aria-hidden="true" />
+      <canvas
+        className="pointer-events-none fixed inset-0 z-0 block h-full w-full"
+        data-grid=""
+        aria-hidden="true"
+      />
+      <div
+        className="fixed top-0 left-0 z-[100] h-0.5 w-0 bg-[var(--accent)]"
+        data-progress=""
+        aria-hidden="true"
+      />
     </>
   );
 }
