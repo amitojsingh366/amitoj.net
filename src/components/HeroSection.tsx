@@ -46,7 +46,7 @@ export function HeroSection() {
           {profile.stats.map((stat) => (
             <div className="grid justify-items-start" key={stat.label}>
               <strong
-                className="text-5xl lg:text-6xl leading-none font-extrabold tracking-[-0.03em]"
+                className="text-4xl lg:text-6xl leading-none font-extrabold tracking-[-0.03em]"
                 data-cell=""
               >
                 {stat.value}

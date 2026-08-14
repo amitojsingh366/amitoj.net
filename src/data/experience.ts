@@ -16,9 +16,8 @@ export const experiences: Experience[] = [
     location: "Nanaimo, BC",
     period: "Feb 2026 – Present",
     bullets: [
-      "Manage CMS repositories and build external-facing web pages for the Political Studies department.",
-      "Evaluate hosting options and coordinate DNS configuration with university IT.",
-      "Write custom CSS/JS enhancements to improve usability and maintain accessibility standards.",
+      "Evaluated and selected optimal web hosting solutions, coordinating with university IT to configure DNS records.",
+      "Manage CMS repositories and develop custom CSS/JS to enhance site design and functionality.",
     ],
   },
   {
@@ -29,10 +28,10 @@ export const experiences: Experience[] = [
     link: "https://keepkey.com/",
     github: "https://github.com/keepkey/keepkey-desktop",
     bullets: [
-      "Contributed 110K+ LOC across Electron + React & TypeScript for a crypto hardware-wallet desktop app.",
-      "Implemented the REST bridge for signing/broadcasting and device management; added TOTP auth and onboarding flows.",
-      "Set up signed auto-updates, cross-platform packaging, and release pipelines with structured logs/telemetry.",
-      "Integrated blockchain workflows using Web3 libraries for robust transaction reliability.",
+      "Engineered desktop wallet infrastructure for 100K+ hardware users via Electron, React, TypeScript and Rust.",
+      "Secured multi-chain transactions across 11+ blockchains by implementing a REST bridge for cryptographic signing.",
+      "Engineered an end-to-end device TOTP generator allowing 100K+ users to utilize KeepKey as an authenticator.",
+      "Streamlined releases across 3 desktop OS platforms by configuring signed auto-updates and release telemetry.",
     ],
   },
   {
@@ -42,9 +41,9 @@ export const experiences: Experience[] = [
     period: "Mar 2021 \u2013 May 2021",
     github: "https://github.com/benawad/dogehouse",
     bullets: [
-      "Contributed 120K+ LOC across React, Electron, and Elixir codebases for a real-time social audio platform.",
-      "Delivered front-end features, fixed bugs, and optimized WebSocket data flow with a distributed team.",
-      "Triaged issues and merged pull requests, standardizing patterns and maintaining code quality.",
+      "Core Maintainer & #2 All-Time Contributor for a distributed real-time social platform with 3,500+ GitHub Stars.",
+      "Optimized WebSocket data flow and integrated core audio streaming features in collaboration with a distributed team.",
+      "Triaged issues and merged pull requests to standardize patterns and maintain code quality.",
     ],
   },
   {
@@ -54,9 +53,9 @@ export const experiences: Experience[] = [
     period: "Aug 2024 \u2013 Apr 2025",
     link: "https://wordpress.viu.ca/acplearnonline/",
     bullets: [
-      "Provided technical support to Adult Basic Education students across diverse tech-related tasks.",
-      "Built and maintained the ABE student support website using WordPress with custom CSS.",
-      "Created student handouts in Markdown and produced instructional videos using DaVinci Resolve.",
+      "Provide technical support to students and maintain support websites using WordPress and custom CSS.",
+      "Create instructional handouts in Markdown and produce video guides using DaVinci Resolve.",
+      "Provided technical support to adult/elderly learners, translating technical jargon into plain, understandable instructions via email.",
     ],
   },
   {
@@ -66,9 +65,10 @@ export const experiences: Experience[] = [
     period: "Jan 2022 \u2013 Jun 2022",
     instagram: "https://www.instagram.com/tedxyouthnmsbh/",
     bullets: [
-      "Led digital operations for event execution, web development, and technical infrastructure.",
-      "Increased event attendance by 30% through targeted online campaigns and automated registration workflows.",
-      "Designed promotional material and managed digital assets for event coordination.",
+      "Led core event and digital operations, overseeing technical infrastructure, web development, and logistics.",
+      "Spearheaded speaker recruitment and sponsorship acquisition, securing key partnerships for event funding.",
+      "Increased event attendance by 30% through targeted online campaigns and registration automation.",
+      "Designed online promotional material and managed digital assets for smooth event coordination.",
     ],
   },
   {

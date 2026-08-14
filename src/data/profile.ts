@@ -20,11 +20,11 @@ export interface Profile {
 export const profile: Profile = {
   name: "Amitoj Singh",
   initials: "A/S",
-  availability: "Available for full-time SWE · 2026",
+  availability: "Available for Fall 2026 & Winter 2027 internships",
   description:
-    "Software engineer from Vancouver Island. I build systems end to end — trading pipelines, hardware bridges, desktop wallets, mobile apps — and I like owning the parts most people skip: releases, DNS, uptime.",
+    "Computer science student and software engineer on Vancouver Island. I build products end to end, from mobile apps and hardware wallets to AI scheduling systems and multi-cloud Kubernetes infrastructure. I like owning the parts most people skip: releases, DNS, and uptime.",
   stats: [
-    { value: "230K+", label: "LOC merged, open source" },
+    { value: "200K+", label: "Users across shipped products" },
     { value: "06", label: "Years shipping" },
   ],
   location: {
