@@ -1,6 +1,5 @@
 export interface Project {
   name: string;
-  displayLines: string[];
   subtitle: string[];
   year: number;
   period?: string;
@@ -13,7 +12,6 @@ export interface Project {
 export const projects: Project[] = [
   {
     name: "Multi-Cloud Kubernetes Homelab",
-    displayLines: ["K8s", "Homelab"],
     subtitle: ["Four-node multi-cloud cluster", "OCI · on-prem · Tailscale mesh"],
     year: 2025,
     bullets: [
@@ -34,8 +32,7 @@ export const projects: Project[] = [
   },
   {
     name: "Trojan Badge",
-    displayLines: ["Hack the", "North"],
-    subtitle: ["Trojan Badge", "University of Waterloo"],
+    subtitle: ["Hack the North 2026", "University of Waterloo"],
     year: 2026,
     bullets: [
       "Built a physical multiplayer zombie-tag game on event badges with C/C++ firmware for ESP32-C3 microcontrollers using ESP-IDF and FreeRTOS.",
@@ -59,7 +56,6 @@ export const projects: Project[] = [
   },
   {
     name: "Signalhouse",
-    displayLines: ["Signal", "House"],
     subtitle: [
       "Swing-trading orchestration",
       "Web dashboard · iOS app · Discord bots",
@@ -85,7 +81,6 @@ export const projects: Project[] = [
   },
   {
     name: "A's Watches",
-    displayLines: ["A's", "Watches"],
     subtitle: [
       "Bespoke automatic watch store",
       "Parts configurator · payments · shipping",
@@ -111,7 +106,6 @@ export const projects: Project[] = [
   },
   {
     name: "HiddenFrame",
-    displayLines: ["Hidden", "Frame"],
     subtitle: ["Full-stack steganography tool", "C++ pipeline · Remix frontend"],
     year: 2024,
     bullets: [
@@ -122,12 +116,8 @@ export const projects: Project[] = [
     tech: ["C++", "Crow", "Remix.js", "SQLite", "Linux", "Caddy", "AWS EC2", "CI/CD"],
     github: "https://github.com/csci265-team/HiddenFrame",
   },
-];
-
-export const moreProjects: Project[] = [
   {
     name: "AI Scheduling System",
-    displayLines: ["AI", "Scheduler"],
     subtitle: [
       "Automated booking for a local pet groomer",
       "Smart calendar · conversational SMS agent",
@@ -142,7 +132,6 @@ export const moreProjects: Project[] = [
   },
   {
     name: "Neurodrive",
-    displayLines: ["Neuro", "Drive"],
     subtitle: ["BCI-controlled racing game", "Muse 2 EEG · Unity"],
     year: 2024,
     bullets: [
@@ -154,7 +143,6 @@ export const moreProjects: Project[] = [
   },
   {
     name: "RPi iPod Emulator",
-    displayLines: ["RPi iPod", "Emulator"],
     subtitle: ["Bluetooth-to-USB bridge", "iPod Accessory Protocol"],
     year: 2024,
     bullets: [
@@ -165,7 +153,6 @@ export const moreProjects: Project[] = [
   },
   {
     name: "GPT-3 Discord Bot",
-    displayLines: ["GPT-3", "Bot"],
     subtitle: ["Context-aware Discord chatbot", "Shipped before ChatGPT launched"],
     year: 2022,
     bullets: [

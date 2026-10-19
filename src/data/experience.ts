@@ -1,18 +1,23 @@
 export interface Experience {
   role: string;
   company: string;
+  displayLines: string[];
   location: string;
   period: string;
   bullets: string[];
+  tech: string[];
   link?: string;
   instagram?: string;
   github?: string;
 }
 
+export type OtherExperience = Omit<Experience, "displayLines" | "tech">;
+
 export const experiences: Experience[] = [
   {
     role: "Software Engineering Intern",
     company: "Human Computer Lab",
+    displayLines: ["Human", "Computer", "Lab"],
     location: "Toronto, ON",
     period: "Sept 2026 – Present",
     bullets: [
@@ -25,10 +30,24 @@ export const experiences: Experience[] = [
       // "Forked Rerun into a web playback tool for the mechanical team and hardened the Blender-to-robot animation pipeline for an internal demo.",
       // "Shipped 3+ internal tools in the first two weeks, working daily across mechanical, electrical, animation, product, and brand teams as requirements evolved.",
     ],
+    tech: [
+      "MCAP",
+      "Google Cloud Storage",
+      "Ed25519",
+      "Linux",
+      "Jetson Orin Nano",
+      "MuJoCo",
+      "REST",
+      "MCP",
+      "Tailscale",
+      "MDM",
+      "SPF/DKIM/DMARC",
+    ],
   },
   {
     role: "Technical Lead",
     company: "Saakhi — Sikh History and Gurmat",
+    displayLines: ["Saakhi"],
     location: "Bahrain / Remote",
     period: "Jan 2020 – Present",
     link: "https://www.sikhsaakhi.com/download",
@@ -38,10 +57,21 @@ export const experiences: Experience[] = [
       "Managed app releases and targeted marketing strategies to successfully scale to 100K+ combined users.",
       "Extensively utilized Android connectivity APIs (NetworkCallback, WifiManager, BluetoothAdapter) for network state broadcasting and seamless external audio playback.",
     ],
+    tech: [
+      "Kotlin",
+      "Java",
+      "SwiftUI",
+      "Android",
+      "iOS",
+      "Cloudflare Workers",
+      "Cloudflare D1",
+      "Cloudflare R2",
+    ],
   },
   {
     role: "AI Policy & Web Developer",
     company: "Vancouver Island University",
+    displayLines: ["VIU"],
     location: "Nanaimo, BC",
     period: "June 2026 – Sept 2026",
     bullets: [
@@ -49,22 +79,33 @@ export const experiences: Experience[] = [
       "Co-developed university-wide generative AI policy and ethics frameworks with the VIU President's working group.",
       "Evaluated data privacy and security implications of emerging AI tools to shape institutional guidance.",
     ],
+    tech: [
+      "Generative AI",
+      "AI Policy",
+      "AI Ethics",
+      "Data Privacy",
+      "Security",
+      "Web Development",
+    ],
   },
   {
     role: "Web Developer",
     company: "Vancouver Island University — Political Studies",
+    displayLines: ["VIU"],
     location: "Nanaimo, BC",
     period: "Feb 2026 – June 2026",
     bullets: [
       "Evaluated and selected optimal web hosting solutions, coordinating with university IT to configure DNS records.",
       "Managed CMS repositories and developed custom CSS/JS to enhance site design and functionality.",
     ],
+    tech: ["DNS", "Web Hosting", "CMS", "CSS", "JavaScript"],
   },
   {
     role: "Software Engineer (Contract)",
     company: "KeepKey Ltd.",
+    displayLines: ["KeepKey"],
     location: "Remote (USA)",
-    period: "Feb 2022 \u2013 Feb 2023",
+    period: "Feb 2022 – Feb 2023",
     link: "https://keepkey.com/",
     github: "https://github.com/keepkey/keepkey-desktop",
     bullets: [
@@ -73,27 +114,40 @@ export const experiences: Experience[] = [
       "Engineered an end-to-end device TOTP generator allowing 100K+ users to utilize KeepKey as an authenticator.",
       "Streamlined releases across 3 desktop OS platforms by configuring signed auto-updates and release telemetry.",
     ],
+    tech: [
+      "Electron",
+      "React",
+      "TypeScript",
+      "Rust",
+      "REST",
+      "Blockchain",
+      "Cryptography",
+      "TOTP",
+      "Code Signing",
+    ],
   },
   {
     role: "Core Maintainer",
     company: "DogeHouse",
+    displayLines: ["Doge", "House"],
     location: "Remote",
-    period: "Mar 2021 \u2013 May 2021",
+    period: "Mar 2021 – May 2021",
     github: "https://github.com/benawad/dogehouse",
     bullets: [
       "Core Maintainer & #2 All-Time Contributor for a distributed real-time social platform with 9,000+ GitHub Stars.",
       "Optimized WebSocket data flow for 3,500+ peak concurrent voice users, integrating core audio streaming features.",
       "Triaged issues and merged pull requests to standardize patterns and maintain code quality.",
     ],
+    tech: ["WebSockets", "Real-time", "Audio Streaming", "Open Source", "Code Review"],
   },
 ];
 
-export const otherExperiences: Experience[] = [
+export const otherExperiences: OtherExperience[] = [
   {
     role: "ABE Digital Support",
     company: "Vancouver Island University",
     location: "Nanaimo, BC",
-    period: "Aug 2024 \u2013 Apr 2025",
+    period: "Aug 2024 – Apr 2025",
     link: "https://wordpress.viu.ca/acplearnonline/",
     bullets: [
       "Provide technical support to students and maintain support websites using WordPress and custom CSS.",
@@ -105,7 +159,7 @@ export const otherExperiences: Experience[] = [
     role: "Operations and IT Coordinator",
     company: "TEDxYouth@NMS Bahrain",
     location: "Bahrain",
-    period: "Jan 2022 \u2013 Jun 2022",
+    period: "Jan 2022 – Jun 2022",
     instagram: "https://www.instagram.com/tedxyouthnmsbh/",
     bullets: [
       "Led core event and digital operations, overseeing technical infrastructure, web development, and logistics.",
@@ -118,7 +172,7 @@ export const otherExperiences: Experience[] = [
     role: "IT Coordinator / Web Developer",
     company: "New Millennium Model United Nations",
     location: "Bahrain",
-    period: "Sep 2021 \u2013 Jan 2022",
+    period: "Sep 2021 – Jan 2022",
     instagram: "https://www.instagram.com/nmmun202122/",
     bullets: [
       "Oversaw IT systems and web platform redesign, enhancing accessibility and visual appeal.",

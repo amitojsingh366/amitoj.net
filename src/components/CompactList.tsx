@@ -2,12 +2,8 @@ export interface CompactItem {
   period: string;
   title: string;
   detail: string;
-  tags?: string[];
   href?: string;
 }
-
-// Keeps each "·" separator at the end of a wrapped line instead of the start.
-const glueSeparators = (text: string) => text.replaceAll(" · ", " · ");
 
 export function CompactList({
   label,
@@ -48,16 +44,9 @@ export function CompactList({
                 <span className={titleClassName}>{item.title}</span>
               )}
             </div>
-            <div className="grid gap-1.5">
-              <p className="m-0 text-sm leading-[1.6] font-light text-[#c9c9d2]">
-                {glueSeparators(item.detail)}
-              </p>
-              {item.tags && (
-                <p className="m-0 text-xs leading-[1.7] tracking-[0.12em] text-[var(--muted)] uppercase">
-                  {glueSeparators(item.tags.join(" · "))}
-                </p>
-              )}
-            </div>
+            <p className="m-0 text-sm leading-[1.6] font-light text-[#c9c9d2]">
+              {item.detail}
+            </p>
           </li>
         ))}
       </ul>

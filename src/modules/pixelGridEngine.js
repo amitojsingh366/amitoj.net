@@ -383,7 +383,7 @@ export class PixelGridEngine {
     this.clearWireCanvases();
     this.wireCacheKey = key;
     // Small document-attached tiles avoid both scroll lag and mobile canvas
-    // dimension limits as the project list grows.
+    // dimension limits as the timeline grows.
     const tileRows = 128;
     for (let row = firstRow; row <= lastRow; row += tileRows) {
       const rows = Math.min(tileRows, lastRow - row + 1);
@@ -969,7 +969,7 @@ export class PixelGridEngine {
       const totalDuration = nodeDuration + branchDuration;
       // Match the reference's timing: nodes begin slightly ahead of the wire
       // head (62% versus 55% of the viewport), leaving time for the discrete
-      // column fill before the trace has travelled toward the next project.
+      // column fill before the trace has travelled toward the next node.
       const reached =
         item.dotTop - this.currentY <
         this.height * nodeActivationViewportRatio;

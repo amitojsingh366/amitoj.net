@@ -899,7 +899,7 @@ flowchart TD
     Page --> Nav["SiteNav — server"]
     Page --> Hero["HeroSection — server"]
     Page --> ExperienceList["ExperienceCard list + CompactList — server"]
-    Page --> ProjectList["ProjectCard list + CompactList — server"]
+    Page --> ProjectList["ProjectCard list — server"]
     Page --> Contact["ContactSection — server"]
 
     Page --> Island["PixelGridCanvas — sole client island"]
@@ -927,9 +927,9 @@ grid is document-attached CSS; the fixed canvas only paints pointer effects.
 | `SiteNav` | Server | Fixed numbered anchor navigation |
 | `HeroSection` | Server | Availability and current-role status, identity, bio, stats, and featured links |
 | `SectionHeading` | Server | Numbered semantic `h2` primitive |
-| `ProjectCard` | Server | Project timeline node, project narrative, technologies, and CTA |
-| `ExperienceCard` | Server | Employment metadata, role, links, and retained bullet content |
-| `CompactList` | Server | One-row entries for secondary roles and projects; only the title links out, so hover paint stays label-sized |
+| `ProjectCard` | Server | Project summary, links, bullets, and a plain technology line |
+| `ExperienceCard` | Server | Experience timeline node, company display type, role, links, bullets, and technology tags |
+| `CompactList` | Server | One-row entries for secondary roles; only the title links out, so hover paint stays label-sized |
 | `ContactSection` | Server | Data-driven contact copy, portrait host, social/direct links, and footer |
 | `PixelGridCanvas` | Client | Explicit visual configuration and engine lifetime only |
 | `PixelGridEngine` | Browser JS | Local raster caches, pointer paint, reveals, tiled wire, portrait lifetime, and scroll progress |
@@ -985,7 +985,7 @@ bundle/runtime fallbacks:
 | Desktop cell | 4px with 0.5px gap |
 | Narrow cell | 3px with 0.5px gap below 760px |
 | Type-in | 480ms on fine pointers; immediate on touch/reduced motion |
-| Project wire | Cells |
+| Experience wire | Cells |
 | Palette | Violet |
 | Accent | `#8B5CF6` |
 | Brush | Radial + dither |
@@ -1007,8 +1007,8 @@ falloff around their text. Hovered link and button labels use weight 700 for
 legibility; the bare-link bloom extends three cells horizontally and one cell
 vertically beyond the label.
 
-The project trace is snapped to the responsive DOM rail. Its inactive portion
-uses a denser four-of-six faint-cell pattern. Each project node is a symmetric
+The experience trace is snapped to the responsive DOM rail. Its inactive portion
+uses a denser four-of-six faint-cell pattern. Each experience node is a symmetric
 5×5 grid square centered on the trace, and its horizontal branch occupies the
 node's exact middle row. The wire head is positioned at 55% of the viewport,
 while node activation begins earlier at the reference's 62% threshold. The node

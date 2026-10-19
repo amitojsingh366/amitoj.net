@@ -6,7 +6,7 @@ import { ContactSection } from "@/components/ContactSection";
 import { PixelGridCanvas } from "@/components/PixelGridCanvas";
 import { SectionHeading } from "@/components/SectionHeading";
 import { SiteNav } from "@/components/SiteNav";
-import { moreProjects, projects } from "@/data/projects";
+import { projects } from "@/data/projects";
 import { experiences, otherExperiences } from "@/data/experience";
 import { profile } from "@/data/profile";
 
@@ -31,13 +31,29 @@ export default function Home() {
             Experience
           </SectionHeading>
 
-          <div>
-            {experiences.map((experience) => (
-              <ExperienceCard
-                key={`${experience.company}-${experience.role}`}
-                experience={experience}
+          <div
+            className="relative mt-2 grid grid-cols-[40px_minmax(0,1fr)] max-sm:grid-cols-[26px_minmax(0,1fr)]"
+            data-wire-track=""
+          >
+            <div className="relative" aria-hidden="true">
+              <span
+                className="absolute top-0 bottom-0 left-2 w-px bg-[var(--line)] max-sm:left-1"
+                data-wire-line=""
               />
-            ))}
+              <span
+                className="absolute top-0 left-2 h-0 w-px bg-[var(--accent)] shadow-[0_0_14px_var(--accent)] max-sm:left-1"
+                data-wire-fill=""
+              />
+            </div>
+            <div>
+              {experiences.map((experience, i) => (
+                <ExperienceCard
+                  key={`${experience.company}-${experience.role}`}
+                  experience={experience}
+                  index={i}
+                />
+              ))}
+            </div>
           </div>
 
           <CompactList
@@ -57,37 +73,11 @@ export default function Home() {
         >
           <SectionHeading number="02">Projects</SectionHeading>
 
-          <div
-            className="relative mt-2 grid grid-cols-[40px_minmax(0,1fr)] max-sm:grid-cols-[26px_minmax(0,1fr)]"
-            data-wire-track=""
-          >
-            <div className="relative" aria-hidden="true">
-              <span
-                className="absolute top-0 bottom-0 left-2 w-px bg-[var(--line)] max-sm:left-1"
-                data-wire-line=""
-              />
-              <span
-                className="absolute top-0 left-2 h-0 w-px bg-[var(--accent)] shadow-[0_0_14px_var(--accent)] max-sm:left-1"
-                data-wire-fill=""
-              />
-            </div>
-            <div>
-              {projects.map((project, i) => (
-                <ProjectCard key={project.name} project={project} index={i} />
-              ))}
-            </div>
+          <div>
+            {projects.map((project) => (
+              <ProjectCard key={project.name} project={project} />
+            ))}
           </div>
-
-          <CompactList
-            label="More projects"
-            items={moreProjects.map((project) => ({
-              period: project.period ?? String(project.year),
-              title: project.name,
-              detail: project.subtitle.join(" · "),
-              tags: project.tech,
-              href: project.github ?? project.link,
-            }))}
-          />
         </section>
 
         <ContactSection />
