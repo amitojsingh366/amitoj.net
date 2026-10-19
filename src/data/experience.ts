@@ -89,18 +89,6 @@ export const experiences: Experience[] = [
     ],
   },
   {
-    role: "Web Developer",
-    company: "Vancouver Island University — Political Studies",
-    displayLines: ["VIU"],
-    location: "Nanaimo, BC",
-    period: "Feb 2026 – June 2026",
-    bullets: [
-      "Evaluated and selected optimal web hosting solutions, coordinating with university IT to configure DNS records.",
-      "Managed CMS repositories and developed custom CSS/JS to enhance site design and functionality.",
-    ],
-    tech: ["DNS", "Web Hosting", "CMS", "CSS", "JavaScript"],
-  },
-  {
     role: "Software Engineer (Contract)",
     company: "KeepKey Ltd.",
     displayLines: ["KeepKey"],
@@ -127,6 +115,28 @@ export const experiences: Experience[] = [
     ],
   },
   {
+    role: "Operations and IT Coordinator",
+    company: "TEDxYouth@NMS Bahrain",
+    displayLines: ["TEDx", "Youth"],
+    location: "Bahrain",
+    period: "Jan 2022 – Jun 2022",
+    instagram: "https://www.instagram.com/tedxyouthnmsbh/",
+    bullets: [
+      "Led core event and digital operations, overseeing technical infrastructure, web development, and logistics.",
+      "Spearheaded speaker recruitment and sponsorship acquisition, securing key partnerships for event funding.",
+      "Increased event attendance by 30% through targeted online campaigns and registration automation.",
+      "Designed online promotional material and managed digital assets for smooth event coordination.",
+    ],
+    tech: [
+      "Operations",
+      "IT Infrastructure",
+      "Web Development",
+      "Automation",
+      "Sponsorships",
+      "Digital Marketing",
+    ],
+  },
+  {
     role: "Core Maintainer",
     company: "DogeHouse",
     displayLines: ["Doge", "House"],
@@ -144,6 +154,16 @@ export const experiences: Experience[] = [
 
 export const otherExperiences: OtherExperience[] = [
   {
+    role: "Web Developer",
+    company: "Vancouver Island University — Political Studies",
+    location: "Nanaimo, BC",
+    period: "Feb 2026 – June 2026",
+    bullets: [
+      "Evaluated and selected optimal web hosting solutions, coordinating with university IT to configure DNS records.",
+      "Managed CMS repositories and developed custom CSS/JS to enhance site design and functionality.",
+    ],
+  },
+  {
     role: "ABE Digital Support",
     company: "Vancouver Island University",
     location: "Nanaimo, BC",
@@ -153,19 +173,6 @@ export const otherExperiences: OtherExperience[] = [
       "Provide technical support to students and maintain support websites using WordPress and custom CSS.",
       "Create instructional handouts in Markdown and produce video guides using DaVinci Resolve.",
       "Provided technical support to adult/elderly learners, translating technical jargon into plain, understandable instructions via email.",
-    ],
-  },
-  {
-    role: "Operations and IT Coordinator",
-    company: "TEDxYouth@NMS Bahrain",
-    location: "Bahrain",
-    period: "Jan 2022 – Jun 2022",
-    instagram: "https://www.instagram.com/tedxyouthnmsbh/",
-    bullets: [
-      "Led core event and digital operations, overseeing technical infrastructure, web development, and logistics.",
-      "Spearheaded speaker recruitment and sponsorship acquisition, securing key partnerships for event funding.",
-      "Increased event attendance by 30% through targeted online campaigns and registration automation.",
-      "Designed online promotional material and managed digital assets for smooth event coordination.",
     ],
   },
   {

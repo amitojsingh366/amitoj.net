@@ -10,6 +10,7 @@ export function ExperienceCard({
   const links = [
     experience.link && { label: "Visit site", url: experience.link },
     experience.github && { label: "View source", url: experience.github },
+    experience.instagram && { label: "Instagram", url: experience.instagram },
   ].filter(Boolean) as { label: string; url: string }[];
 
   return (
