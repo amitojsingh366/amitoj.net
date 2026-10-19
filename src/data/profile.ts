@@ -20,9 +20,9 @@ export interface Profile {
 export const profile: Profile = {
   name: "Amitoj Singh",
   initials: "A/S",
-  availability: "Available for Fall 2026 & Winter 2027 internships",
+  availability: "Available for Winter & Summer 2027 co-ops",
   description:
-    "Computer science student and software engineer on Vancouver Island. I build products end to end, from mobile apps and hardware wallets to AI scheduling systems and multi-cloud Kubernetes infrastructure. I like owning the parts most people skip: releases, DNS, and uptime.",
+    "B.Sc. Computer Science student at VIU with a Management minor, graduating Spring 2028. Dean's List, 2025–26. I build products end to end, from mobile apps and hardware wallets to robotics, AI tools, and cloud infrastructure.",
   stats: [
     { value: "200K+", label: "Users across shipped products" },
     { value: "06", label: "Years shipping" },

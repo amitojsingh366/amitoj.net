@@ -905,15 +905,18 @@ flowchart TD
     Page --> Island["PixelGridCanvas — sole client island"]
     Portrait["portrait.ts — replaceable payload"] --> Engine["PixelGridEngine"]
     Island --> Engine
-    Engine --> Canvas["Fixed aria-hidden canvas"]
+    Engine --> Canvas["Fixed pointer-effects canvas"]
+    Engine --> Local["Document-attached text, wire tiles, and portrait canvases"]
     Engine --> Hooks["Stable data-* presentation hooks"]
 ```
 
 The semantic headings, paragraphs, lists, and links remain real HTML. The
 canvas is an `aria-hidden` enhancement and does not own content. Until the
 engine has loaded the local font and measured the display type, the DOM text
-remains visible. Only `html.pixel-grid-ready [data-cell]` becomes transparent,
-so a JavaScript or canvas failure cannot erase the page's headings.
+remains visible. Each heading receives `data-pixel-text` only after its own
+canvas succeeds. Its canvas is positioned inside the semantic heading, so the
+browser scrolls both together without waiting for JavaScript. The background
+grid is document-attached CSS; the fixed canvas only paints pointer effects.
 
 ### Component responsibilities
 
@@ -928,7 +931,8 @@ so a JavaScript or canvas failure cannot erase the page's headings.
 | `ExperienceCard` | Server | Employment metadata, role, links, and retained bullet content |
 | `ContactSection` | Server | Data-driven contact copy, portrait host, social/direct links, and footer |
 | `PixelGridCanvas` | Client | Explicit visual configuration and engine lifetime only |
-| `PixelGridEngine` | Browser JS | Rasterization, pointer paint, reveals, wire, portrait, progress, and desktop visual scroll interpolation |
+| `PixelGridEngine` | Browser JS | Local raster caches, pointer paint, reveals, tiled wire, portrait lifetime, and scroll progress |
+| `portraitRenderer.js` | Browser JS, lazy-loaded | Cancellable portrait processing in bounded tasks; shared decoded source cache |
 | `portrait.ts` | Shared data | 320×299 encoded luminance mask; replaceable without editing a component |
 
 The old theme provider/toggle, hero snap controller, hash updater, generic
@@ -953,7 +957,7 @@ document-wide or cannot live on one element:
   engine;
 - base document, selection, and focus-visible behavior;
 - shared keyframe definitions;
-- the `.pixel-grid-ready [data-cell]` canvas handoff;
+- the per-element `[data-pixel-text]` handoff and engine-generated canvas placement;
 - reduced-motion and forced-colors fallbacks.
 
 Stable `data-*` attributes are reserved for `PixelGridEngine` measurement and
@@ -977,9 +981,9 @@ bundle/runtime fallbacks:
 |---|---|
 | Hero | Full-viewport centered, two-line identity |
 | Render scope | Display type only |
-| Desktop cell | 6px with 1px gap |
-| Narrow cell | 5px below 760px |
-| Type-in | On, 760ms column reveal |
+| Desktop cell | 4px with 0.5px gap |
+| Narrow cell | 3px with 0.5px gap below 760px |
+| Type-in | 480ms on fine pointers; immediate on touch/reduced motion |
 | Work wire | Cells |
 | Palette | Violet |
 | Accent | `#8B5CF6` |
@@ -989,8 +993,9 @@ bundle/runtime fallbacks:
 | Accumulate | Off |
 | Click paint | Off |
 | Portrait | Faint; heats on hover; touched portrait cells persist for the session |
-| Desktop scroll interpolation | `0.16` |
-| Touch/reduced motion scroll | Native, with no transformed wrapper |
+| Scrolling | Native on every device; no transformed wrapper or synthetic easing |
+| Content reveals | Brief opacity fade on fine pointers; immediate on touch/reduced motion |
+| Ambient cues | Three introductory cycles, then static |
 
 Pointer paint is event-driven. It stamps a radial/dither field at the current
 pointer position, then lets those cells decay; it does not interpolate a comet
@@ -1012,10 +1017,11 @@ the node plays the sequence in reverse: the branch retracts first, followed by
 the node clearing one column at a time from right to left. When scrolling
 advances the wire, the head
 brightens and emits a deterministic three-cell-radius spray that changes every
-90ms. Once the head has entered the track, its
-spray keeps animating until the wire reaches the bottom. The Page Visibility
-API pauses the animation while the document is hidden and resumes it when the
-page becomes visible again.
+90ms while scrolling, then settles. Touch and reduced-motion modes omit the
+spray and node transitions. The wire uses narrow 128-row canvas tiles attached
+to the track, avoiding mobile canvas size limits and positional scroll lag.
+Settled content does not keep requesting frames. The Page Visibility API pauses
+animation while the document is hidden. Motion-preference changes apply live.
 
 ### Portrait and font assets
 
@@ -1028,6 +1034,12 @@ blur, 0.55 unsharp contrast, pivot-based tonal remapping, four-level
 quantization, and masked Floyd–Steinberg diffusion. Portrait cells also retain
 the reference-specific 2px gap at a 6px cell size, with proportionally smaller
 gaps when the portrait grid is subdivided on narrow screens.
+
+The contact host reserves its final 320:299 aspect ratio on every viewport.
+Portrait loading begins within two viewports of the section; decoding,
+resampling, blur, diffusion, and painting yield in short tasks. Resizing or
+unmounting cancels unfinished work. Completed source decoding is retained, and
+height-only viewport changes retain text and portrait rasters.
 
 JetBrains Mono's Latin variable WOFF2 is stored locally in
 `public/fonts/jetbrains-mono-latin.woff2`. This removes the Google Fonts build
@@ -1043,8 +1055,8 @@ same stable asset.
 - All project, experience, and link content remains local and server rendered.
 - No API, CMS, client fetch, loading waterfall, or hydration-owned content was
   introduced.
-- The generated route is 36.9 kB with 139 kB first-load JavaScript in the
-  verified Next.js 15.5.13 production build.
+- The rendering-fix build reports an 8.23 kB route with 110 kB first-load
+  JavaScript on Next.js 15.5.13. Portrait data and its renderer load separately.
 
 ### Verification completed
 
@@ -1064,3 +1076,9 @@ Remaining launch work is product-level rather than a porting blocker: measure
 Core Web Vitals on the deployed build, test Safari's canvas text behavior and a
 real coarse-pointer device, and complete the broader sitemap/canonical/JSON-LD
 decisions already identified in the baseline SEO section.
+
+The rendering follow-up also checks `yarn test` (13 engine regressions),
+390×844 touch emulation, 1440×900 desktop rendering, live reduced-motion and
+forced-colors changes, progress at the document bottom, and cache retention
+when only viewport height changes. The portrait adds no layout shift in these
+local checks. Real-device Safari testing remains a separate launch check.

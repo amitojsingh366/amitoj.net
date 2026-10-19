@@ -29,7 +29,7 @@ export function ContactSection() {
 
       <div className="relative mt-10">
         <div
-          className="relative aspect-[320/299] w-full max-sm:aspect-[1/1.3]"
+          className="relative aspect-[320/299] w-full"
           data-portrait=""
         />
 

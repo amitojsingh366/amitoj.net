@@ -14,14 +14,14 @@ export function HeroSection() {
       <span id="home" className="absolute top-0" aria-hidden="true" />
       <div className="relative flex items-center gap-3 text-xs tracking-[0.12em] text-[var(--muted)] uppercase sm:tracking-[0.18em]">
         <span
-          className="h-1.5 w-1.5 animate-[availability-pulse_2s_ease-in-out_infinite] bg-[var(--accent)]"
+          className="h-1.5 w-1.5 animate-[availability-pulse_2s_ease-in-out_3] bg-[var(--accent)]"
           aria-hidden="true"
         />
         <p className="m-0">{profile.availability}</p>
       </div>
 
       <h1
-        className="relative mt-4 sm:mt-6 text-9xl md:text-[10rem] leading-[0.84] font-extrabold tracking-[-0.055em] uppercase "
+        className="relative mt-4 sm:mt-6 text-8xl md:text-[10rem] leading-[0.84] font-extrabold tracking-[-0.055em] uppercase "
         aria-label={profile.name}
       >
         <span className="block" data-cell="" data-cell-reveal="">
@@ -46,7 +46,7 @@ export function HeroSection() {
           {profile.stats.map((stat) => (
             <div className="grid justify-items-start" key={stat.label}>
               <strong
-                className="text-4xl lg:text-6xl leading-none font-extrabold tracking-[-0.03em]"
+                className="text-5xl lg:text-6xl leading-none font-extrabold tracking-[-0.03em]"
                 data-cell=""
               >
                 {stat.value}
@@ -85,11 +85,11 @@ export function HeroSection() {
           className="grid h-4 w-7 grid-cols-[repeat(5,4px)] grid-rows-[repeat(3,4px)] gap-0.5"
           aria-hidden="true"
         >
-          <i className="col-start-1 row-start-1 animate-[scroll-cue-pulse_1.5s_ease-in-out_infinite] bg-[var(--accent)] opacity-[0.18] group-hover:animate-none group-hover:bg-white group-hover:opacity-100 group-hover:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] group-focus-visible:animate-none group-focus-visible:bg-white group-focus-visible:opacity-100 group-focus-visible:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] motion-reduce:opacity-[0.72]" />
-          <i className="col-start-5 row-start-1 animate-[scroll-cue-pulse_1.5s_ease-in-out_infinite] bg-[var(--accent)] opacity-[0.18] group-hover:animate-none group-hover:bg-white group-hover:opacity-100 group-hover:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] group-focus-visible:animate-none group-focus-visible:bg-white group-focus-visible:opacity-100 group-focus-visible:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] motion-reduce:opacity-[0.72]" />
-          <i className="col-start-2 row-start-2 animate-[scroll-cue-pulse_1.5s_ease-in-out_infinite] bg-[var(--accent)] opacity-[0.18] [animation-delay:140ms] group-hover:animate-none group-hover:bg-white group-hover:opacity-100 group-hover:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] group-focus-visible:animate-none group-focus-visible:bg-white group-focus-visible:opacity-100 group-focus-visible:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] motion-reduce:opacity-[0.72]" />
-          <i className="col-start-4 row-start-2 animate-[scroll-cue-pulse_1.5s_ease-in-out_infinite] bg-[var(--accent)] opacity-[0.18] [animation-delay:140ms] group-hover:animate-none group-hover:bg-white group-hover:opacity-100 group-hover:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] group-focus-visible:animate-none group-focus-visible:bg-white group-focus-visible:opacity-100 group-focus-visible:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] motion-reduce:opacity-[0.72]" />
-          <i className="col-start-3 row-start-3 animate-[scroll-cue-pulse_1.5s_ease-in-out_infinite] bg-[var(--accent)] opacity-[0.18] [animation-delay:280ms] group-hover:animate-none group-hover:bg-white group-hover:opacity-100 group-hover:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] group-focus-visible:animate-none group-focus-visible:bg-white group-focus-visible:opacity-100 group-focus-visible:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] motion-reduce:opacity-[0.72]" />
+          <i className="col-start-1 row-start-1 animate-[scroll-cue-pulse_1.5s_ease-in-out_3] bg-[var(--accent)] opacity-[0.18] group-hover:animate-none group-hover:bg-white group-hover:opacity-100 group-hover:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] group-focus-visible:animate-none group-focus-visible:bg-white group-focus-visible:opacity-100 group-focus-visible:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] motion-reduce:opacity-[0.72]" />
+          <i className="col-start-5 row-start-1 animate-[scroll-cue-pulse_1.5s_ease-in-out_3] bg-[var(--accent)] opacity-[0.18] group-hover:animate-none group-hover:bg-white group-hover:opacity-100 group-hover:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] group-focus-visible:animate-none group-focus-visible:bg-white group-focus-visible:opacity-100 group-focus-visible:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] motion-reduce:opacity-[0.72]" />
+          <i className="col-start-2 row-start-2 animate-[scroll-cue-pulse_1.5s_ease-in-out_3] bg-[var(--accent)] opacity-[0.18] [animation-delay:140ms] group-hover:animate-none group-hover:bg-white group-hover:opacity-100 group-hover:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] group-focus-visible:animate-none group-focus-visible:bg-white group-focus-visible:opacity-100 group-focus-visible:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] motion-reduce:opacity-[0.72]" />
+          <i className="col-start-4 row-start-2 animate-[scroll-cue-pulse_1.5s_ease-in-out_3] bg-[var(--accent)] opacity-[0.18] [animation-delay:140ms] group-hover:animate-none group-hover:bg-white group-hover:opacity-100 group-hover:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] group-focus-visible:animate-none group-focus-visible:bg-white group-focus-visible:opacity-100 group-focus-visible:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] motion-reduce:opacity-[0.72]" />
+          <i className="col-start-3 row-start-3 animate-[scroll-cue-pulse_1.5s_ease-in-out_3] bg-[var(--accent)] opacity-[0.18] [animation-delay:280ms] group-hover:animate-none group-hover:bg-white group-hover:opacity-100 group-hover:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] group-focus-visible:animate-none group-focus-visible:bg-white group-focus-visible:opacity-100 group-focus-visible:shadow-[0_0_12px_#fff,0_0_20px_var(--accent)] motion-reduce:opacity-[0.72]" />
         </span>
       </a>
     </header>

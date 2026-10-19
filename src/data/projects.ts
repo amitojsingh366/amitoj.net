@@ -12,6 +12,57 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    name: "Trojan Badge",
+    displayLines: ["HackTheNorth", "2026"],
+    subtitle: ["Trojan Badge", "University of Waterloo"],
+    year: 2026,
+    bullets: [
+      "Built a physical multiplayer zombie-tag game on event badges with C/C++ firmware for ESP32-C3 microcontrollers using ESP-IDF and FreeRTOS.",
+      "Used ESP-NOW for sub-second proximity detection, human/zombie tagging, and synchronized round countdowns without relying on local Wi-Fi.",
+      "Integrated Sentry firmware logging and streamed live match telemetry to a web dashboard through Cloudflare Workers, Durable Objects, and WebSockets.",
+      "Completed Solana's scavenger winning a Solana Seeker phone after deploying a devnet program and an x402 payment endpoint.",
+    ],
+    tech: [
+      "ESP32-C3",
+      "C/C++",
+      "ESP-IDF",
+      "FreeRTOS",
+      "ESP-NOW",
+      "Sentry",
+      "Cloudflare Workers",
+      "Durable Objects",
+      "WebSockets",
+      "React",
+    ],
+    link: "https://github.com/amitojsingh366/htn2026",
+  },
+  {
+    name: "A's Watches",
+    displayLines: ["A's", "Watches"],
+    subtitle: [
+      "Bespoke automatic watch store",
+      "Parts configurator · payments · shipping",
+    ],
+    year: 2026,
+    bullets: [
+      "Built a watch parts configurator with 10K+ combinations so customers could choose every part and reduce back-and-forth with the owner.",
+      "Shipped the full store solo with Next.js, Cloudflare, Stripe payments, Auth0, an admin panel, and shipping tracking.",
+      "Composited layered product images server-side with Photon and added per-page SEO, reaching 98 on PageSpeed Insights.",
+      "Self-hosted Rybbit for analytics and telemetry, iterating with the client as requirements changed.",
+    ],
+    tech: [
+      "Next.js",
+      "Tailwind",
+      "Cloudflare",
+      "Stripe",
+      "Auth0",
+      "Photon",
+      "Rybbit",
+      "SEO",
+    ],
+    link: "https://aswatches.net",
+  },
+  {
     name: "Signalhouse",
     displayLines: ["Signal", "House"],
     subtitle: [
@@ -23,6 +74,7 @@ export const projects: Project[] = [
       "Engineered a swing-trading orchestration platform scanning over 330 TSX/CDR/ETF symbols every 15 minutes.",
       "Built a multi-stage analysis pipeline combining technical indicators, sentiment inputs, and commodity-correlation signals.",
       "Delivered a connected ecosystem spanning a web dashboard, iOS alert app, and Discord bot integrations.",
+      "Integrated OpenRouter API vision and OCR to sync portfolio holdings from images.",
     ],
     tech: [
       "Next.js 14",
@@ -30,6 +82,7 @@ export const projects: Project[] = [
       "SwiftUI",
       "PostgreSQL",
       "TA-Lib",
+      "OpenRouter API",
       "Discord.js",
       "Docker",
     ],
@@ -80,9 +133,10 @@ export const projects: Project[] = [
     year: 2024,
     bullets: [
       "Built a BCI-controlled racing game in Unity using Muse 2 EEG signals for velocity control.",
-      "Implemented rigid-body physics, multiplayer netcode, and hardware integration with gyroscope steering.",
+      "Implemented gyroscope head-tilt steering and rigid-body physics using quaternion rotation and velocity math.",
+      "Built multiplayer netcode on Unity Transport, handling lobby creation and abstracting IP and port-forwarding logic.",
     ],
-    tech: ["Unity", "C#", "EEG/BCI", "Multiplayer Netcode"],
+    tech: ["Unity", "C#", "EEG/BCI", "Unity Transport", "Multiplayer Netcode"],
   },
   {
     name: "HiddenFrame",
@@ -91,9 +145,10 @@ export const projects: Project[] = [
     year: 2024,
     bullets: [
       "Developed a full-stack steganography tool with C++ image processing, Crow API services, and a Remix.js frontend.",
+      "Deployed on AWS EC2 with Ubuntu, configured security groups and IAM roles, and managed the DevOps cycle through CI/CD.",
       "Managed end-to-end DevOps operations including DNS, SSL, and Caddy reverse proxy configuration.",
     ],
-    tech: ["C++", "Crow", "Remix.js", "Linux", "Caddy"],
+    tech: ["C++", "Crow", "Remix.js", "SQLite", "Linux", "Caddy", "AWS EC2", "CI/CD"],
     github: "https://github.com/csci265-team/HiddenFrame",
   },
   {
@@ -124,9 +179,9 @@ export const projects: Project[] = [
     year: 2024,
     bullets: [
       "Engineered a Bluetooth-to-USB bridge on Raspberry Pi to emulate the iPod Accessory Protocol.",
-      "Wrote custom udev rules and Bash automation to enable wireless audio on a legacy car head unit.",
+      "Wrote Embedded C++, custom udev rules, and Bash automation to enable wireless audio on a legacy car head unit.",
     ],
-    tech: ["Raspberry Pi", "Bash", "udev", "Bluetooth", "USB"],
+    tech: ["Raspberry Pi", "Embedded C++", "Bash", "udev", "Bluetooth", "USB"],
   },
   {
     name: "GPT-3 Discord Bot",

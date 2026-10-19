@@ -1,7 +1,5 @@
-import { portraitData } from "@/data/portrait";
-
 const DEFAULTS = {
-  cellSize: 6,
+  cellSize: 4,
   renderScope: "display",
   typeIn: true,
   wireRender: "cells",
@@ -13,10 +11,8 @@ const DEFAULTS = {
   accumulate: false,
   clickPaint: false,
   portraitMode: "faint-hover",
-  scrollEase: 0.16,
 };
 
-const ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
 // Interactive fills use only the three intermediate violet levels: every cell
 // is active, while neither the background nor maximum-white level can be
 // selected. Repetition preserves the reference button's 2/7, 3/7, 2/7 mix.
@@ -29,15 +25,19 @@ export class PixelGridEngine {
     this.raf = 0;
     this.heat = new Map();
     this.hoverHistory = new Map();
+    this.hoverBordered = new WeakMap();
     this.portraitLit = new Set();
     this.textTargets = [];
+    this.revealedText = new WeakSet();
     this.revealBlocks = [];
+    this.wireNodes = [];
+    this.wireTiles = [];
     this.nodeStates = new WeakMap();
     this.pointer = null;
     this.previousPointer = null;
     this.hoverElement = null;
     this.portrait = null;
-    this.pattern = null;
+    this.portraitLoading = null;
     this.lastPointerAt = 0;
     this.lastScrollAt = 0;
     this.wireInProgress = false;
@@ -49,6 +49,7 @@ export class PixelGridEngine {
     if (this.mounted) return;
 
     this.canvas = document.querySelector("[data-grid]");
+    this.gridBackground = document.querySelector("[data-grid-background]");
     this.wrapper = document.querySelector("[data-smooth]");
     this.spacer = document.querySelector("[data-spacer]");
     this.progress = document.querySelector("[data-progress]");
@@ -64,7 +65,9 @@ export class PixelGridEngine {
     this.coarsePointer = window.matchMedia(
       "(hover: none), (pointer: coarse)",
     ).matches;
-    this.smooth = !this.reducedMotion;
+    this.calmMotion = this.reducedMotion || this.coarsePointer;
+    // Content and its pixel layers scroll together on the browser's compositor.
+    this.smooth = false;
     this.currentY = window.scrollY;
     this.targetY = this.currentY;
     this.brushRadius = this.config.brushRadius;
@@ -72,19 +75,25 @@ export class PixelGridEngine {
     document.documentElement.style.setProperty("--accent", this.ramp[3]);
 
     if (this.spacer) this.spacer.style.display = "none";
-    if (this.smooth) this.wrapper.style.willChange = "transform";
+    this.wrapper.style.transform = "none";
+    this.wrapper.style.willChange = "auto";
 
     this.bind();
     this.setupReveals();
+    this.setupWire();
     this.resize();
 
     const fontsReady = document.fonts?.ready ?? Promise.resolve();
     Promise.resolve(fontsReady).then(() => {
       if (!this.mounted) return;
       this.measureTextTargets();
+      this.measureWireGeometry();
+      this.updateScrollMaximum();
+      this.updateTextReveals(performance.now());
       this.draw(performance.now());
       document.documentElement.classList.add("pixel-grid-ready");
       this.ready = true;
+      this.setupPortraitObserver();
       this.requestFrame();
     });
   }
@@ -93,16 +102,28 @@ export class PixelGridEngine {
     if (!this.mounted) return;
     this.mounted = false;
     cancelAnimationFrame(this.raf);
+    clearTimeout(this.animationTimer);
     this.raf = 0;
     this.abortController?.abort();
     this.resizeObserver?.disconnect();
+    this.contentResizeObserver?.disconnect();
+    this.revealObserver?.disconnect();
+    this.portraitObserver?.disconnect();
     document.documentElement.classList.remove("pixel-grid-ready");
+    this.clearTextTargets();
+    this.clearPortrait();
+    this.clearWireCanvases();
+    for (const element of [this.wireLine, this.wireFill, ...this.wireNodes.flatMap(({ dot, stub }) => [dot, stub])]) {
+      if (element) element.style.opacity = "";
+    }
 
     if (this.wrapper) {
       this.wrapper.style.transform = "none";
       this.wrapper.style.willChange = "auto";
     }
     if (this.spacer) this.spacer.style.display = "";
+    if (this.gridBackground) this.gridBackground.style.transform = "none";
+    if (this.progress) this.progress.style.scale = "0 1";
     if (this.portraitHost) {
       this.portraitHost.style.height = "";
       this.portraitHost.style.aspectRatio = "";
@@ -124,7 +145,7 @@ export class PixelGridEngine {
     window.addEventListener(
       "resize",
       () => {
-        this.resize();
+        this.resizePending = true;
         this.requestFrame();
       },
       { signal, passive: true },
@@ -140,7 +161,7 @@ export class PixelGridEngine {
     window.addEventListener(
       "pointermove",
       (event) => {
-        if (this.coarsePointer || this.reducedMotion) return;
+        if (this.calmMotion || event.pointerType === "touch") return;
         this.previousPointer = this.pointer;
         this.pointer = { x: event.clientX, y: event.clientY };
         this.lastPointerAt = performance.now();
@@ -164,7 +185,7 @@ export class PixelGridEngine {
     document.addEventListener(
       "pointerover",
       (event) => {
-        if (this.coarsePointer || this.reducedMotion) return;
+        if (this.calmMotion || event.pointerType === "touch") return;
         const candidate = event.target?.closest?.("a, button") ?? null;
         this.hoverElement = candidate;
         if (candidate) this.hoverHistory.set(candidate, performance.now());
@@ -189,6 +210,7 @@ export class PixelGridEngine {
       () => {
         if (document.hidden) {
           cancelAnimationFrame(this.raf);
+          clearTimeout(this.animationTimer);
           this.raf = 0;
         } else {
           this.requestFrame();
@@ -197,39 +219,90 @@ export class PixelGridEngine {
       { signal },
     );
 
+    for (const query of ["(prefers-reduced-motion: reduce)", "(hover: none), (pointer: coarse)"]) {
+      window.matchMedia(query).addEventListener("change", () => this.updateMotionPreferences(), { signal });
+    }
+
     if (window.ResizeObserver) {
       this.resizeObserver = new ResizeObserver(() => {
         const rect = this.canvas.getBoundingClientRect();
         const width = Math.round(rect.width);
         const height = Math.round(rect.height);
         if (width && height && (width !== this.width || height !== this.height)) {
-          this.resize();
+          this.resizePending = true;
           this.requestFrame();
         }
       });
       this.resizeObserver.observe(this.canvas);
+
+      this.contentResizeObserver = new ResizeObserver(() => {
+        this.geometryPending = true;
+        this.requestFrame();
+      });
+      this.contentResizeObserver.observe(this.wrapper);
     }
   }
 
+  updateMotionPreferences() {
+    this.reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    this.coarsePointer = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    this.calmMotion = this.reducedMotion || this.coarsePointer;
+    this.pointer = null;
+    this.hoverElement = null;
+    this.heat.clear();
+    this.hoverHistory.clear();
+    this.setupReveals();
+    this.resizePending = true;
+    this.requestFrame();
+  }
+
   setupReveals() {
+    this.revealObserver?.disconnect();
+    this.revealObserver = null;
     this.revealBlocks = [...document.querySelectorAll("[data-reveal]")];
     for (const block of this.revealBlocks) {
-      if (this.reducedMotion) {
+      if (this.calmMotion) {
         block.style.opacity = "1";
         block.style.transform = "none";
+        block.style.transition = "none";
+        block.dataset.pixelReveal = "visible";
         continue;
       }
       if (block.dataset.pixelReveal) continue;
       block.dataset.pixelReveal = "pending";
       block.style.opacity = "0";
-      block.style.transform = "translateY(24px)";
-      block.style.transition =
-        "opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1)";
+      block.style.transform = "none";
+      block.style.transition = "opacity .25s ease-out";
     }
+
+    this.revealBlocks = this.revealBlocks.filter((block) => block.dataset.pixelReveal !== "visible");
+    if (this.calmMotion || !window.IntersectionObserver) return;
+    this.revealObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const block = entry.target;
+          block.style.opacity = "1";
+          block.style.transform = "none";
+          block.dataset.pixelReveal = "visible";
+          this.revealObserver.unobserve(block);
+          const index = this.revealBlocks.indexOf(block);
+          if (index >= 0) this.revealBlocks.splice(index, 1);
+        }
+      },
+      { rootMargin: `0px 0px -${Math.round(window.innerHeight * 0.08)}px 0px` },
+    );
+    for (const block of this.revealBlocks) this.revealObserver.observe(block);
   }
 
   runReveals() {
-    if (this.reducedMotion || this.revealBlocks.length === 0) return;
+    if (
+      this.reducedMotion ||
+      this.revealObserver ||
+      this.revealBlocks.length === 0
+    ) {
+      return;
+    }
     for (let index = this.revealBlocks.length - 1; index >= 0; index -= 1) {
       const block = this.revealBlocks[index];
       const rect = block.getBoundingClientRect();
@@ -242,27 +315,155 @@ export class PixelGridEngine {
     }
   }
 
+  setupWire() {
+    this.wireTrack = document.querySelector("[data-wire-track]");
+    this.wireLine = document.querySelector("[data-wire-line]");
+    this.wireFill = document.querySelector("[data-wire-fill]");
+    this.wireNodes = [...document.querySelectorAll("[data-node]")].map(
+      (node) => ({
+        node,
+        dot: node.querySelector("[data-dot]"),
+        stub: node.querySelector("[data-stub]"),
+      }),
+    );
+
+    const cellMode = this.config.wireRender === "cells";
+    if (this.wireLine) this.wireLine.style.opacity = cellMode ? "0" : "1";
+    if (this.wireFill) this.wireFill.style.opacity = cellMode ? "0" : "1";
+    for (const { dot, stub } of this.wireNodes) {
+      if (dot) dot.style.opacity = cellMode ? "0" : "1";
+      if (stub) stub.style.opacity = cellMode ? "0" : "1";
+    }
+  }
+
+  measureWireGeometry() {
+    if (!this.wireTrack) {
+      this.wireGeometry = null;
+      return;
+    }
+    const trackRect = this.wireTrack.getBoundingClientRect();
+    const lineRect = this.wireLine?.getBoundingClientRect();
+    this.wireGeometry = {
+      top: trackRect.top + this.currentY,
+      height: trackRect.height,
+      left: trackRect.left,
+      wireX: lineRect?.width
+        ? lineRect.left + lineRect.width / 2
+        : trackRect.left + 8,
+    };
+    for (const item of this.wireNodes) {
+      if (!item.dot) continue;
+      const nodeRect = item.node.getBoundingClientRect();
+      const dotRect = item.dot.getBoundingClientRect();
+      item.left = nodeRect.left;
+      item.dotTop = dotRect.top + this.currentY;
+      item.centerRow = Math.round(
+        (item.dotTop + dotRect.height / 2) / this.cell,
+      );
+    }
+    this.setupWireCanvases();
+  }
+
+  clearWireCanvases() {
+    for (const tile of this.wireTiles) tile.canvas.remove();
+    this.wireTiles = [];
+    this.wireCacheKey = null;
+  }
+
+  setupWireCanvases() {
+    if (this.config.wireRender !== "cells") return;
+    const geometry = this.wireGeometry;
+    const firstRow = Math.floor(geometry.top / this.cell) - 4;
+    const lastRow = Math.ceil((geometry.top + geometry.height) / this.cell) + 4;
+    const left = (Math.floor(geometry.wireX / this.cell) - 4) * this.cell;
+    const right = Math.max(geometry.wireX + this.cell * 4, ...this.wireNodes.map((item) => item.left || 0));
+    const width = Math.ceil((right - left) / this.cell + 1) * this.cell;
+    const key = [geometry.top, geometry.left, firstRow, lastRow, left, width, this.cell, this.dpr].join(":");
+    if (key === this.wireCacheKey) return;
+    this.clearWireCanvases();
+    this.wireCacheKey = key;
+    // Small document-attached tiles avoid both scroll lag and mobile canvas
+    // dimension limits as the project list grows.
+    const tileRows = 128;
+    for (let row = firstRow; row <= lastRow; row += tileRows) {
+      const rows = Math.min(tileRows, lastRow - row + 1);
+      const canvas = document.createElement("canvas");
+      canvas.className = "pixel-wire-cache";
+      canvas.setAttribute("aria-hidden", "true");
+      canvas.width = Math.ceil(width * this.dpr);
+      canvas.height = Math.ceil(rows * this.cell * this.dpr);
+      canvas.style.cssText = `left:${left - geometry.left}px;top:${row * this.cell - geometry.top}px;width:${width}px;height:${rows * this.cell}px`;
+      const context = canvas.getContext("2d");
+      if (!context) continue;
+      this.wireTrack.append(canvas);
+      this.wireTiles.push({ canvas, context, left, row, rows });
+    }
+    this.drawWire(performance.now(), Math.max(1, (this.cell - this.gap) * this.dpr), true);
+  }
+
   resize() {
     if (!this.mounted) return;
+    this.resizePending = false;
+    this.currentY = window.scrollY;
+    const previousWidth = this.width;
+    const previousDpr = this.dpr;
+    const previousCell = this.cell;
+    const previousHeight = this.height;
     this.viewportWidth = window.innerWidth;
     this.cell =
       this.viewportWidth < 760
-        ? Math.max(4, Math.round(this.config.cellSize * 0.75))
+        ? Math.max(3, Math.round(this.config.cellSize * 0.75))
         : this.config.cellSize;
-    this.gap = this.cell >= 7 ? 2 : 1;
+    // Keep finer lettering dense enough to read at smaller display sizes.
+    this.gap = this.cell >= 7 ? 2 : this.cell >= 5 ? 1 : 0.5;
     this.dpr = Math.min(2, window.devicePixelRatio || 1);
     const rect = this.canvas.getBoundingClientRect();
     this.width = Math.round(rect.width) || window.innerWidth;
     this.height = Math.round(rect.height) || window.innerHeight;
-    this.canvas.width = Math.round(this.width * this.dpr);
-    this.canvas.height = Math.round(this.height * this.dpr);
-    this.pattern = null;
-    this.portrait = null;
-    this.measureTextTargets();
+    const widthChanged = previousWidth !== this.width || previousDpr !== this.dpr || previousCell !== this.cell;
+    const overlayEnabled = !this.calmMotion;
+    if (widthChanged || previousHeight !== this.height || overlayEnabled !== this.overlayEnabled) {
+      this.canvas.width = overlayEnabled ? Math.round(this.width * this.dpr) : 1;
+      this.canvas.height = overlayEnabled ? Math.round(this.height * this.dpr) : 1;
+      this.overlayEnabled = overlayEnabled;
+    }
+    if (widthChanged) this.clearPortrait();
+    this.updateGridMetrics();
+    if (widthChanged) this.measureWireGeometry();
+    this.updateScrollMaximum();
+    if (this.ready) {
+      if (widthChanged) this.measureTextTargets();
+      if (previousHeight !== this.height) this.setupReveals();
+      this.setupPortraitObserver();
+    }
+  }
+
+  updateGridMetrics() {
+    if (!this.gridBackground) return;
+    this.gridBackground.style.setProperty("--grid-cell", `${this.cell}px`);
+    this.gridBackground.style.setProperty("--grid-gap", `${this.gap}px`);
+    this.gridBackground.style.setProperty("--grid-color", this.ramp[0]);
+  }
+
+  updateScrollMaximum() {
+    this.scrollMaximum = Math.max(
+      1,
+      this.wrapper.offsetTop + this.wrapper.offsetHeight - window.innerHeight,
+    );
+  }
+
+  clearTextTargets() {
+    for (const target of this.textTargets) {
+      if (target.complete || target.startedAt) this.revealedText.add(target.element);
+      target.canvas.remove();
+      delete target.element.dataset.pixelText;
+    }
+    this.textTargets = [];
   }
 
   measureTextTargets() {
     if (!this.mounted) return;
+    this.clearTextTargets();
     const elements =
       this.config.renderScope === "display"
         ? [...document.querySelectorAll("[data-cell]")]
@@ -361,24 +562,61 @@ export class PixelGridEngine {
       }
     }
 
-    const maxColumn = cells.reduce(
-      (maximum, cell) => Math.max(maximum, cell.column),
-      1,
-    );
+    if (!cells.length) return null;
+    const minColumn = Math.min(...cells.map((cell) => cell.column));
+    const maxColumn = Math.max(...cells.map((cell) => cell.column));
+    const minRow = Math.min(...cells.map((cell) => cell.row));
+    const maxRow = Math.max(...cells.map((cell) => cell.row));
+    const documentTop = rect.top + this.currentY;
+    const snappedX = (Math.round(rect.left / this.cell) + minColumn) * this.cell;
+    const snappedY = (Math.round(documentTop / this.cell) + minRow) * this.cell;
+    const cacheWidth = (maxColumn - minColumn + 1) * this.cell;
+    const cacheHeight = (maxRow - minRow + 1) * this.cell;
+    const cache = document.createElement("canvas");
+    cache.width = Math.ceil(cacheWidth * this.dpr);
+    cache.height = Math.ceil(cacheHeight * this.dpr);
+    const cacheContext = cache.getContext("2d");
+    if (!cacheContext) return null;
+    const square = Math.max(1, (this.cell - this.gap) * this.dpr);
+    for (let level = 1; level <= 4; level += 1) {
+      cacheContext.fillStyle = this.ramp[level];
+      cacheContext.beginPath();
+      for (const cell of cells) {
+        if (cell.level !== level) continue;
+        cacheContext.rect(
+          Math.round((cell.column - minColumn) * this.cell * this.dpr),
+          Math.round((cell.row - minRow) * this.cell * this.dpr),
+          square,
+          square,
+        );
+      }
+      cacheContext.fill();
+    }
+
+    const reveal = element.hasAttribute("data-cell-reveal") && this.config.typeIn && !this.calmMotion && !this.revealedText.has(element);
+    cache.className = "pixel-text-cache";
+    cache.setAttribute("aria-hidden", "true");
+    cache.style.cssText = `left:${snappedX - rect.left}px;top:${snappedY - documentTop}px;width:${cacheWidth}px;height:${cacheHeight}px`;
+    cache.style.clipPath = reveal ? "inset(0 100% 0 0)" : "none";
+    element.append(cache);
+    element.dataset.pixelText = "";
     return {
       element,
-      x: Math.round(rect.left / this.cell) * this.cell,
-      y: Math.round((rect.top + this.currentY) / this.cell) * this.cell,
-      cells,
-      maxColumn,
-      reveal: element.hasAttribute("data-cell-reveal"),
+      canvas: cache,
+      x: snappedX,
+      width: cacheWidth,
+      y: snappedY,
+      maxColumn: maxColumn - minColumn,
+      reveal,
       startedAt: 0,
-      complete: !element.hasAttribute("data-cell-reveal") || !this.config.typeIn,
+      complete: !reveal,
+      visibleWidth: reveal ? 0 : cacheWidth,
     };
   }
 
   requestFrame() {
     if (!this.mounted || document.hidden || this.raf) return;
+    clearTimeout(this.animationTimer);
     this.raf = requestAnimationFrame((time) => this.frame(time));
   }
 
@@ -387,30 +625,34 @@ export class PixelGridEngine {
     if (!this.mounted) return;
 
     const scrollY = window.scrollY;
-    if (this.smooth) {
-      const difference = scrollY - this.currentY;
-      this.currentY +=
-        Math.abs(difference) < 0.08
-          ? difference
-          : difference * this.config.scrollEase;
-      this.wrapper.style.transform = `translate3d(0,${(
-        scrollY - this.currentY
-      ).toFixed(2)}px,0)`;
-    } else {
-      this.currentY = scrollY;
-      this.wrapper.style.transform = "none";
+    this.currentY = scrollY;
+    if (this.resizePending) this.resize();
+    if (this.geometryPending) {
+      this.geometryPending = false;
+      this.measureWireGeometry();
+      this.measurePortraitGeometry();
+      this.updateScrollMaximum();
+      // Local canvases stay attached to their elements when other content moves.
+      for (const target of this.textTargets) {
+        target.y = target.element.getBoundingClientRect().top + scrollY;
+      }
     }
 
     this.runReveals();
+    this.updateTextReveals(now);
     this.updatePointer(now);
     this.draw(now);
     this.updateChrome(now);
 
-    if (this.needsAnotherFrame(now, scrollY)) this.requestFrame();
+    if (this.needsAnotherFrame(now, scrollY)) {
+      this.requestFrame();
+    } else if (this.wireInProgress || this.hoverElement) {
+      // Only changing decorative cells need a timer while the page is at rest.
+      this.animationTimer = setTimeout(() => this.requestFrame(), this.wireInProgress ? 90 : 120);
+    }
   }
 
   needsAnotherFrame(now, scrollY) {
-    const easing = this.smooth && Math.abs(scrollY - this.currentY) > 0.08;
     // Do not keep the animation loop alive for headings that have not entered
     // the viewport yet. A scroll event will schedule the frame that starts them.
     const typing = this.textTargets.some(
@@ -418,14 +660,11 @@ export class PixelGridEngine {
     );
     const pointerActive = this.pointer && now - this.lastPointerAt < 120;
     return Boolean(
-      easing ||
-        typing ||
+      typing ||
         pointerActive ||
         this.heat.size ||
-        this.hoverHistory.size ||
-        this.wireInProgress ||
-        now < this.wireAnimatingUntil ||
-        now - this.lastScrollAt < 180,
+        [...this.hoverHistory.keys()].some((element) => element !== this.hoverElement) ||
+        now < this.wireAnimatingUntil,
     );
   }
 
@@ -434,7 +673,13 @@ export class PixelGridEngine {
     // Once movement stops, let existing heat finish its configured fade instead
     // of renewing it on every animation frame.
     if (now - this.lastPointerAt > 80) return;
-    const portraitRect = this.portraitHost?.getBoundingClientRect();
+    const geometry = this.portraitGeometry;
+    const portraitRect = geometry && {
+      ...geometry,
+      top: geometry.top - this.currentY,
+      bottom: geometry.top + geometry.height - this.currentY,
+      right: geometry.left + geometry.width,
+    };
     const overPortrait =
       portraitRect &&
       this.pointer.x >= portraitRect.left &&
@@ -487,61 +732,47 @@ export class PixelGridEngine {
   draw(now) {
     const context = this.context;
     const scale = this.dpr;
-    const cellSize = this.cell * scale;
     const square = Math.max(1, (this.cell - this.gap) * scale);
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    if (!this.pattern) {
-      const tile = document.createElement("canvas");
-      tile.width = Math.round(cellSize);
-      tile.height = Math.round(cellSize);
-      const tileContext = tile.getContext("2d");
-      tileContext.fillStyle = this.ramp[0];
-      tileContext.fillRect(0, 0, square, square);
-      this.pattern = context.createPattern(tile, "repeat");
-    }
-
-    const offsetY = -Math.round((this.currentY * scale) % Math.round(cellSize));
-    context.save();
-    context.translate(0, offsetY);
-    context.fillStyle = this.pattern;
-    context.fillRect(0, 0, this.canvas.width, this.canvas.height + cellSize);
-    context.restore();
-
-    this.drawText(now, square);
     this.drawWire(now, square);
-    this.drawHeat(now, square);
-    this.drawHoveredLinks(now, square);
-    this.drawPortrait(square);
+    if (this.heat.size || this.hoverHistory.size || this.overlayDirty) {
+      context.setTransform(1, 0, 0, 1, 0, 0);
+      context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.drawHeat(now, square);
+      this.drawHoveredLinks(now, square);
+      this.overlayDirty = this.heat.size > 0 || this.hoverHistory.size > 0;
+    }
+    if (!this.portraitObserver && !this.portrait) this.drawPortrait();
   }
 
-  drawText(now, square) {
-    const context = this.context;
-    const scale = this.dpr;
+  updateTextReveals(now) {
     for (const target of this.textTargets) {
       const viewportY = target.y - this.currentY;
-      if (viewportY > this.height + 160 || viewportY < -400) continue;
-      if (target.reveal && !target.startedAt && viewportY < this.height * 0.94) {
+      if (this.calmMotion || this.reducedMotion) {
+        target.complete = true;
+        target.visibleWidth = target.width;
+      }
+      if (target.reveal && !target.complete && !target.startedAt && viewportY < this.height * 0.94 && viewportY > -400) {
         target.startedAt = now;
       }
-      let visibleColumn = Number.POSITIVE_INFINITY;
       if (target.reveal && target.startedAt && !target.complete) {
-        const raw = Math.min(1, (now - target.startedAt) / 760);
+        const raw = Math.min(1, (now - target.startedAt) / 480);
         const eased = raw * (2 - raw);
-        visibleColumn = target.maxColumn * eased;
-        if (raw >= 1) target.complete = true;
-      } else if (target.reveal && !target.startedAt) {
-        visibleColumn = -1;
+        const visibleColumn = Math.floor(target.maxColumn * eased);
+        const visibleWidth = Math.min(
+          target.width,
+          (visibleColumn + 1) * this.cell,
+        );
+        target.visibleWidth = visibleWidth;
+        if (raw >= 1) {
+          target.complete = true;
+          target.visibleWidth = target.width;
+        }
       }
-
-      for (const cell of target.cells) {
-        if (cell.column > visibleColumn) continue;
-        const x = (target.x + cell.column * this.cell) * scale;
-        const y = (viewportY + cell.row * this.cell) * scale;
-        context.fillStyle = this.ramp[cell.level];
-        context.fillRect(Math.round(x), Math.round(y), square, square);
+      if (target.canvas && target.lastVisibleWidth !== target.visibleWidth) {
+        target.canvas.style.clipPath = target.complete ? "none" : `inset(0 ${Math.max(0, target.width - target.visibleWidth)}px 0 0)`;
+        target.lastVisibleWidth = target.visibleWidth;
       }
+      if (target.complete && target.element) this.revealedText.add(target.element);
     }
   }
 
@@ -593,7 +824,13 @@ export class PixelGridEngine {
       const alpha = active ? 1 : Math.max(0, 1 - age / 300);
       const rect = element.getBoundingClientRect();
       if (rect.bottom < 0 || rect.top > this.height) continue;
-      const bordered = Number.parseFloat(getComputedStyle(element).borderTopWidth) > 0;
+      if (!this.hoverBordered.has(element)) {
+        this.hoverBordered.set(
+          element,
+          Number.parseFloat(getComputedStyle(element).borderTopWidth) > 0,
+        );
+      }
+      const bordered = this.hoverBordered.get(element);
       const paddingX = bordered ? 0 : this.cell * 3;
       const paddingY = bordered ? 0 : this.cell;
       const left = rect.left - paddingX;
@@ -646,54 +883,61 @@ export class PixelGridEngine {
     }
   }
 
-  drawWire(now, square) {
-    const track = document.querySelector("[data-wire-track]");
-    if (!track) return;
-    const line = document.querySelector("[data-wire-line]");
-    const fill = document.querySelector("[data-wire-fill]");
+  drawWire(now, square, paintAll = false) {
+    const geometry = this.wireGeometry;
+    if (!geometry) return;
     const cellMode = this.config.wireRender === "cells";
-    if (line) line.style.opacity = cellMode ? "0" : "1";
-    if (fill) fill.style.opacity = cellMode ? "0" : "1";
     if (!cellMode) return;
 
-    const context = this.context;
     const scale = this.dpr;
-    const trackRect = track.getBoundingClientRect();
-    const lineRect = line?.getBoundingClientRect();
-    const wireX = lineRect?.width
-      ? lineRect.left + lineRect.width / 2
-      : trackRect.left + 8;
-    const column = Math.round(wireX / this.cell);
-    const top = trackRect.top + this.currentY;
-    const startRow = Math.floor(top / this.cell);
-    const endRow = Math.ceil((top + trackRect.height) / this.cell);
+    const column = Math.round(geometry.wireX / this.cell);
+    const trackTop = geometry.top - this.currentY;
+    const startRow = Math.floor(geometry.top / this.cell);
+    const endRow = Math.ceil(
+      (geometry.top + geometry.height) / this.cell,
+    );
     const wireHeadViewportRatio = 0.55;
     const nodeActivationViewportRatio = 0.62;
     const progress = Math.max(
       0,
       Math.min(
         1,
-        (this.height * wireHeadViewportRatio - trackRect.top) /
-          Math.max(1, trackRect.height),
+        (this.height * wireHeadViewportRatio - trackTop) /
+          Math.max(1, geometry.height),
       ),
     );
-    this.wireInProgress = progress > 0.001 && progress < 0.999;
+    this.wireInProgress = !this.calmMotion && progress > 0.001 && progress < 0.999 && now - this.lastScrollAt < 180;
     const head = startRow + Math.round((endRow - startRow) * progress);
+    const drawKey = [head, Math.floor(this.currentY / (this.cell * 128)), this.calmMotion, this.wireInProgress ? Math.floor(now / 90) : 0, now < this.wireAnimatingUntil ? Math.floor(now / 16) : 0].join(":");
+    if (!paintAll && drawKey === this.wireDrawKey) return;
+    this.wireDrawKey = drawKey;
+    const activeTiles = this.wireTiles.filter((tile) => paintAll || (
+      (tile.row + tile.rows) * this.cell > this.currentY - this.cell * 128 &&
+      tile.row * this.cell < this.currentY + this.height + this.cell * 128
+    ));
+    const dirtyTiles = new Set(activeTiles);
+    for (const tile of activeTiles) tile.context.clearRect(0, 0, tile.canvas.width, tile.canvas.height);
 
     const putCell = (cellColumn, cellRow, level) => {
       if (!level) return;
-      const y = cellRow * this.cell - this.currentY;
-      if (y < -this.cell || y > this.height + this.cell) return;
+      const first = this.wireTiles[0];
+      if (!first) return;
+      const tile = this.wireTiles[Math.floor((cellRow - first.row) / 128)];
+      if (!tile || !dirtyTiles.has(tile)) return;
+      const context = tile.context;
       context.fillStyle = this.ramp[Math.min(4, level)];
       context.fillRect(
-        Math.round(cellColumn * this.cell * scale),
-        Math.round(y * scale),
+        Math.round((cellColumn * this.cell - tile.left) * scale),
+        Math.round((cellRow - tile.row) * this.cell * scale),
         square,
         square,
       );
     };
 
-    for (let row = startRow; row <= endRow; row += 1) {
+    const firstVisibleRow = activeTiles[0]?.row ?? endRow;
+    const lastTile = activeTiles.at(-1);
+    const lastVisibleRow = lastTile ? lastTile.row + lastTile.rows : startRow;
+    for (let row = Math.max(startRow, firstVisibleRow); row <= Math.min(endRow, lastVisibleRow); row += 1) {
       const hash = this.hash(column, row);
       let level = row <= head ? (hash % 7 < 5 ? 3 : 2) : hash % 6 < 4 ? 1 : 0;
       const distance = Math.abs(row - head);
@@ -701,9 +945,7 @@ export class PixelGridEngine {
       putCell(column, row, level);
     }
 
-    // The head keeps shedding a deterministic spray for the entire active
-    // portion of the trace. The Page Visibility handler pauses the rAF loop
-    // when the tab is hidden and resumes it when the page becomes visible.
+    // A short spray responds to scrolling, then settles instead of looping.
     if (this.wireInProgress) {
       const phase = Math.floor(now / 90);
       for (let dy = -3; dy <= 3; dy += 1) {
@@ -716,17 +958,9 @@ export class PixelGridEngine {
       }
     }
 
-    for (const node of document.querySelectorAll("[data-node]")) {
-      const nodeRect = node.getBoundingClientRect();
-      const dot = node.querySelector("[data-dot]");
-      const stub = node.querySelector("[data-stub]");
-      if (dot) dot.style.opacity = "0";
-      if (stub) stub.style.opacity = "0";
-      if (!dot) continue;
-      const dotRect = dot.getBoundingClientRect();
-      const centerRow = Math.round(
-        (dotRect.top + dotRect.height / 2 + this.currentY) / this.cell,
-      );
+    for (const item of this.wireNodes) {
+      if (!item.dot || item.centerRow == null) continue;
+      const centerRow = item.centerRow;
       const nodeRadius = 2;
       const nodeColumns = nodeRadius * 2 + 1;
       const columnDuration = 32;
@@ -736,21 +970,26 @@ export class PixelGridEngine {
       // Match the reference's timing: nodes begin slightly ahead of the wire
       // head (62% versus 55% of the viewport), leaving time for the discrete
       // column fill before the trace has travelled toward the next project.
-      const reached = dotRect.top < this.height * nodeActivationViewportRatio;
+      const reached =
+        item.dotTop - this.currentY <
+        this.height * nodeActivationViewportRatio;
       const viewportY = centerRow * this.cell - this.currentY;
-      let state = this.nodeStates.get(node);
+      let state = this.nodeStates.get(item.node);
       if (!state) {
         state = {
           progress: reached && viewportY < -this.cell * 6 ? 1 : 0,
           lastTime: now,
         };
-        this.nodeStates.set(node, state);
+        this.nodeStates.set(item.node, state);
       }
 
       const target = reached ? 1 : 0;
       const frameDelta = Math.min(64, Math.max(0, now - state.lastTime));
       state.lastTime = now;
-      if (state.progress < target) {
+      const visible = viewportY >= -this.cell * 6 && viewportY <= this.height + this.cell * 6;
+      if (this.calmMotion || !visible) {
+        state.progress = target;
+      } else if (state.progress < target) {
         state.progress = Math.min(target, state.progress + frameDelta / totalDuration);
       } else if (state.progress > target) {
         state.progress = Math.max(target, state.progress - frameDelta / totalDuration);
@@ -791,7 +1030,10 @@ export class PixelGridEngine {
       }
 
       const startColumn = column + nodeRadius + 1;
-      const endColumn = Math.max(startColumn, Math.floor(nodeRect.left / this.cell));
+      const endColumn = Math.max(
+        startColumn,
+        Math.floor(item.left / this.cell),
+      );
       const filledThrough = startColumn +
         Math.round((endColumn - startColumn) * branchProgress);
       for (let current = startColumn; current <= endColumn; current += 1) {
@@ -808,203 +1050,106 @@ export class PixelGridEngine {
     }
   }
 
-  buildPortrait() {
-    if (!this.portraitHost) return null;
-    const hostRect = this.portraitHost.getBoundingClientRect();
-    if (!hostRect.width || !hostRect.height) return null;
+  clearPortrait() {
+    this.portraitBuildController?.abort();
+    this.portraitBuildController = null;
+    this.portraitLoading = null;
+    this.portrait?.canvas?.remove();
+    this.portrait = null;
+    this.portraitLit.clear();
+  }
 
-    let portraitCell = this.cell;
-    while (
-      Math.floor(hostRect.width / portraitCell) < 150 &&
-      portraitCell > 1.5
-    ) {
-      portraitCell /= 2;
-    }
-    const columns = Math.floor(hostRect.width / portraitCell);
-    const rows = Math.round(columns * portraitData.rows / portraitData.cols);
-    const sourceLength = portraitData.cols * portraitData.rows;
-    const sourceLuminance = new Float32Array(sourceLength);
-    const sourceMask = new Uint8Array(sourceLength);
-    for (let index = 0; index < sourceLength; index += 1) {
-      const encoded = Math.max(0, ALPHABET.indexOf(portraitData.data[index]));
-      if (encoded > 0) {
-        sourceMask[index] = 1;
-        sourceLuminance[index] = (encoded - 1) / 62;
-      }
-    }
-
-    const luminance = new Float32Array(columns * rows);
-    const occupied = new Uint8Array(columns * rows);
-    for (let row = 0; row < rows; row += 1) {
-      const sourceTop = Math.floor((row * portraitData.rows) / rows);
-      const sourceBottom = Math.max(
-        Math.floor(((row + 1) * portraitData.rows) / rows),
-        sourceTop + 1,
-      );
-      for (let column = 0; column < columns; column += 1) {
-        const sourceLeft = Math.floor(
-          (column * portraitData.cols) / columns,
-        );
-        const sourceRight = Math.max(
-          Math.floor(((column + 1) * portraitData.cols) / columns),
-          sourceLeft + 1,
-        );
-        let sum = 0;
-        let hits = 0;
-        let samples = 0;
-        for (let sourceY = sourceTop; sourceY < sourceBottom; sourceY += 1) {
-          for (
-            let sourceX = sourceLeft;
-            sourceX < sourceRight;
-            sourceX += 1
-          ) {
-            const sourceIndex = sourceY * portraitData.cols + sourceX;
-            samples += 1;
-            if (sourceMask[sourceIndex]) {
-              sum += sourceLuminance[sourceIndex];
-              hits += 1;
-            }
-          }
-        }
-        const index = row * columns + column;
-        occupied[index] = hits / samples >= 0.5 ? 1 : 0;
-        luminance[index] = hits ? sum / hits : 0;
-      }
-    }
-
-    const blurred = new Float32Array(luminance.length);
-    for (let row = 0; row < rows; row += 1) {
-      for (let column = 0; column < columns; column += 1) {
-        let total = 0;
-        let count = 0;
-        for (let dy = -2; dy <= 2; dy += 1) {
-          for (let dx = -2; dx <= 2; dx += 1) {
-            const x = column + dx;
-            const y = row + dy;
-            if (x < 0 || x >= columns || y < 0 || y >= rows) continue;
-            total += luminance[y * columns + x];
-            count += 1;
-          }
-        }
-        blurred[row * columns + column] = total / count;
-      }
-    }
-
-    const diffusion = new Float32Array(luminance.length);
-    for (let index = 0; index < diffusion.length; index += 1) {
-      const value =
-        luminance[index] + 0.55 * (luminance[index] - blurred[index]);
-      diffusion[index] = Math.max(
-        0,
-        Math.min(1, 0.5 + (value - portraitData.pivot) * 1.7),
-      );
-    }
-
-    const levels = new Uint8Array(luminance.length);
-    for (let row = 0; row < rows; row += 1) {
-      for (let column = 0; column < columns; column += 1) {
-        const index = row * columns + column;
-        if (!occupied[index]) continue;
-        const value = Math.max(0, Math.min(1, diffusion[index]));
-        const level = Math.max(1, Math.min(4, Math.round(value * 3) + 1));
-        levels[index] = level;
-        const quantized = (level - 1) / 3;
-        const difference = value - quantized;
-        const push = (dx, dy, factor) => {
-          const x = column + dx;
-          const y = row + dy;
-          if (x >= 0 && x < columns && y >= 0 && y < rows) {
-            const target = y * columns + x;
-            if (occupied[target]) diffusion[target] += difference * factor;
-          }
-        };
-        push(1, 0, 7 / 16);
-        push(-1, 1, 3 / 16);
-        push(0, 1, 5 / 16);
-        push(1, 1, 1 / 16);
-      }
-    }
-
-    const scale = this.dpr;
-    const scaledCell = portraitCell * scale;
-    const portraitGap =
-      portraitCell >= 6 ? 2 : portraitCell >= 3 ? 1 : 0.5;
-    const square = Math.max(1, (portraitCell - portraitGap) * scale);
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(columns * scaledCell);
-    canvas.height = Math.round(rows * scaledCell);
-    const context = canvas.getContext("2d");
-    if (!context) return null;
-
-    for (let level = 1; level <= 4; level += 1) {
-      context.fillStyle = this.ramp[level];
-      context.beginPath();
-      for (let row = 0; row < rows; row += 1) {
-        for (let column = 0; column < columns; column += 1) {
-          if (levels[row * columns + column] !== level) continue;
-          context.rect(
-            Math.round(column * scaledCell),
-            Math.round(row * scaledCell),
-            square,
-            square,
-          );
-        }
-      }
-      context.fill();
-    }
-
-    this.portraitHost.style.height = `${rows * portraitCell}px`;
-    this.portraitHost.style.aspectRatio = "auto";
-
-    return {
-      canvas,
-      columns,
-      rows,
-      levels,
-      cell: portraitCell,
+  measurePortraitGeometry() {
+    if (!this.portraitHost) return;
+    const rect = this.portraitHost.getBoundingClientRect();
+    this.portraitGeometry = {
+      left: rect.left,
+      top: rect.top + window.scrollY,
+      width: rect.width,
+      height: rect.height,
     };
   }
 
-  drawPortrait() {
-    if (!this.portraitHost) return;
-    if (!this.portrait) this.portrait = this.buildPortrait();
-    if (!this.portrait) return;
-    const rect = this.portraitHost.getBoundingClientRect();
-    if (rect.bottom < 0 || rect.top > this.height) return;
-    const context = this.context;
-    const scale = this.dpr;
-    const portrait = this.portrait;
-
-    context.save();
-    context.globalAlpha = 0.22;
-    context.drawImage(
-      portrait.canvas,
-      Math.round(rect.left * scale),
-      Math.round(rect.top * scale),
-    );
-    context.restore();
-
-    context.save();
-    context.globalCompositeOperation = "lighter";
-    context.globalAlpha = 0.4;
-    for (const index of this.portraitLit) {
-      const row = Math.floor(index / portrait.columns);
-      const column = index % portrait.columns;
-      const level = portrait.levels[index];
-      if (!level) continue;
-      const y = rect.top + row * portrait.cell;
-      if (y > this.height || y + portrait.cell < 0) continue;
-      const portraitGap =
-        portrait.cell >= 6 ? 2 : portrait.cell >= 3 ? 1 : 0.5;
-      context.fillStyle = this.ramp[level];
-      context.fillRect(
-        Math.round((rect.left + column * portrait.cell) * scale),
-        Math.round(y * scale),
-        Math.max(1, (portrait.cell - portraitGap) * scale),
-        Math.max(1, (portrait.cell - portraitGap) * scale),
-      );
+  setupPortraitObserver() {
+    this.portraitObserver?.disconnect();
+    this.portraitObserver = null;
+    this.measurePortraitGeometry();
+    if (!this.portraitHost || this.portrait) return;
+    if (window.IntersectionObserver) {
+      this.portraitObserver = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) this.drawPortrait();
+      }, { rootMargin: `${this.height * 2}px 0px` });
+      this.portraitObserver.observe(this.portraitHost);
+    } else {
+      this.drawPortrait();
     }
-    context.restore();
+  }
+
+  drawPortrait() {
+    const geometry = this.portraitGeometry;
+    if (!this.portraitHost || !geometry || !geometry.width || this.portrait || this.portraitLoading || this.portraitFailed) return;
+    const scrollY = window.scrollY;
+    if (geometry.top - scrollY > this.height * 3 || geometry.top + geometry.height - scrollY < -this.height * 2) return;
+    const controller = new AbortController();
+    this.portraitBuildController = controller;
+    // Loading and processing both happen outside frame(). The DOM reserves the
+    // final aspect ratio from the first paint, including while loading fails.
+    this.portraitAssets ??= Promise.all([
+      import("@/data/portrait"),
+      import("./portraitRenderer.js"),
+    ]);
+    this.portraitLoading = this.portraitAssets
+      .then(([{ portraitData }, { createPortrait }]) => {
+        if (!this.mounted || controller.signal.aborted) return null;
+        return createPortrait({
+          portraitData,
+          width: geometry.width,
+          cell: this.cell,
+          dpr: this.dpr,
+          ramp: this.ramp,
+          signal: controller.signal,
+        });
+      })
+      .then((portrait) => {
+        if (!portrait || !this.mounted || controller.signal.aborted) return;
+        portrait.canvas.style.width = "100%";
+        portrait.canvas.style.height = "100%";
+        this.portrait = portrait;
+        this.portraitHost.append(portrait.canvas);
+        this.portraitObserver?.disconnect();
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") this.portraitFailed = true;
+      })
+      .finally(() => {
+        if (this.portraitBuildController === controller) this.portraitLoading = null;
+      });
+  }
+
+  paintPortraitCell(index) {
+    const portrait = this.portrait;
+    if (!portrait) return;
+    const level = portrait.levels[index];
+    if (!level) return;
+    const row = Math.floor(index / portrait.columns);
+    const column = index % portrait.columns;
+    const portraitGap =
+      portrait.cell >= 6 ? 2 : portrait.cell >= 3 ? 1 : 0.5;
+    const square = Math.max(
+      1,
+      (portrait.cell - portraitGap) * this.dpr,
+    );
+    portrait.context.save();
+    portrait.context.globalCompositeOperation = "lighter";
+    portrait.context.globalAlpha = 0.4;
+    portrait.context.fillStyle = this.ramp[level];
+    portrait.context.fillRect(
+      Math.round(column * portrait.cell * this.dpr),
+      Math.round(row * portrait.cell * this.dpr),
+      square,
+      square,
+    );
+    portrait.context.restore();
   }
 
   rememberPortraitCells(rect) {
@@ -1024,18 +1169,24 @@ export class PixelGridEngine {
         const y = row + dy;
         if (x < 0 || x >= portrait.columns || y < 0 || y >= portrait.rows) continue;
         const index = y * portrait.columns + x;
-        if (portrait.levels[index]) this.portraitLit.add(index);
+        if (portrait.levels[index] && !this.portraitLit.has(index)) {
+          this.portraitLit.add(index);
+          this.paintPortraitCell(index);
+        }
       }
     }
   }
 
   updateChrome(now) {
-    const maximum = Math.max(
-      1,
-      document.documentElement.scrollHeight - window.innerHeight,
-    );
     if (this.progress) {
-      this.progress.style.width = `${Math.min(100, (this.currentY / maximum) * 100)}%`;
+      const progress = Math.max(
+        0,
+        Math.min(1, this.currentY / this.scrollMaximum),
+      );
+      if (progress !== this.progressValue) {
+        this.progressValue = progress;
+        this.progress.style.scale = `${progress} 1`;
+      }
     }
     if (this.hoverElement) this.hoverHistory.set(this.hoverElement, now);
   }
