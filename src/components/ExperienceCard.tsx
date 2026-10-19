@@ -55,10 +55,7 @@ export function ExperienceCard({
             ))}
           </h3>
 
-          <p className="mt-[18px] mb-0 text-sm leading-[1.4] font-semibold tracking-[0.08em] text-[var(--fg)] uppercase">
-            {experience.role}
-          </p>
-          <p className="mt-2 mb-0 text-xs leading-[1.8] text-[var(--muted)]">
+          <p className="mt-[18px] mb-0 text-xs leading-[1.8] text-[var(--muted)]">
             {experience.company} · {experience.location}
           </p>
 
@@ -80,16 +77,21 @@ export function ExperienceCard({
         </div>
 
         <div className="flex flex-col gap-[26px]">
-          <ul className="grid list-none gap-4 p-0 text-sm leading-[1.6] font-light text-[#c9c9d2]">
-            {experience.bullets.map((bullet) => (
-              <li
-                className="border-l border-[var(--line)] pl-[18px]"
-                key={bullet}
-              >
-                {bullet}
-              </li>
-            ))}
-          </ul>
+          <div>
+            <h4 className="mt-0 mb-4 text-2xl leading-[1.1] font-extrabold tracking-[-0.03em] uppercase">
+              {experience.role}
+            </h4>
+            <ul className="grid list-none gap-4 p-0 text-sm leading-[1.6] font-light text-[#c9c9d2]">
+              {experience.bullets.map((bullet) => (
+                <li
+                  className="border-l border-[var(--line)] pl-[18px]"
+                  key={bullet}
+                >
+                  {bullet}
+                </li>
+              ))}
+            </ul>
+          </div>
 
           <div className="flex flex-wrap gap-1.5" aria-label="Technologies">
             {experience.tech.map((technology) => (
