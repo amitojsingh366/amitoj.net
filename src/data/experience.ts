@@ -40,7 +40,7 @@ export const experiences: Experience[] = [
     ],
   },
   {
-    role: "AI Content and Communications Specialist",
+    role: "AI Policy & Web Developer",
     company: "Vancouver Island University",
     location: "Nanaimo, BC",
     period: "June 2026 – Sept 2026",

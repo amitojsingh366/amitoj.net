@@ -34,7 +34,7 @@ export const projects: Project[] = [
   },
   {
     name: "Trojan Badge",
-    displayLines: ["HackTheNorth", "2026"],
+    displayLines: ["Hack the", "North"],
     subtitle: ["Trojan Badge", "University of Waterloo"],
     year: 2026,
     bullets: [
@@ -55,7 +55,7 @@ export const projects: Project[] = [
       "WebSockets",
       "React",
     ],
-    link: "https://github.com/amitojsingh366/htn2026",
+    github: "https://github.com/amitojsingh366/htn2026",
   },
   {
     name: "Signalhouse",
