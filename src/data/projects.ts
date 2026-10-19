@@ -12,6 +12,27 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    name: "Multi-Cloud Kubernetes Homelab",
+    displayLines: ["K8s", "Homelab"],
+    subtitle: ["Four-node multi-cloud cluster", "OCI · on-prem · Tailscale mesh"],
+    year: 2025,
+    bullets: [
+      "Operate a 4-node k3s cluster spanning two OCI regions and an on-premise server, networked entirely over a Tailscale WireGuard mesh.",
+      "Configured hybrid nodes across a local x86-64 server and three cloud OCI Ampere ARM instances.",
+      "Implemented virtual IP load balancing using Kube-vip, MetalLB, and Traefik Ingress for redundancy.",
+    ],
+    tech: [
+      "k3s",
+      "OCI",
+      "Docker",
+      "PostgreSQL",
+      "Tailscale",
+      "Traefik",
+      "Kube-vip",
+      "MetalLB",
+    ],
+  },
+  {
     name: "Trojan Badge",
     displayLines: ["HackTheNorth", "2026"],
     subtitle: ["Trojan Badge", "University of Waterloo"],
@@ -35,32 +56,6 @@ export const projects: Project[] = [
       "React",
     ],
     link: "https://github.com/amitojsingh366/htn2026",
-  },
-  {
-    name: "A's Watches",
-    displayLines: ["A's", "Watches"],
-    subtitle: [
-      "Bespoke automatic watch store",
-      "Parts configurator · payments · shipping",
-    ],
-    year: 2026,
-    bullets: [
-      "Built a watch parts configurator with 10K+ combinations so customers could choose every part and reduce back-and-forth with the owner.",
-      "Shipped the full store solo with Next.js, Cloudflare, Stripe payments, Auth0, an admin panel, and shipping tracking.",
-      "Composited layered product images server-side with Photon and added per-page SEO, reaching 98 on PageSpeed Insights.",
-      "Self-hosted Rybbit for analytics and telemetry, iterating with the client as requirements changed.",
-    ],
-    tech: [
-      "Next.js",
-      "Tailwind",
-      "Cloudflare",
-      "Stripe",
-      "Auth0",
-      "Photon",
-      "Rybbit",
-      "SEO",
-    ],
-    link: "https://aswatches.net",
   },
   {
     name: "Signalhouse",
@@ -89,6 +84,48 @@ export const projects: Project[] = [
     github: "https://github.com/amitojsingh366/signalhouse",
   },
   {
+    name: "A's Watches",
+    displayLines: ["A's", "Watches"],
+    subtitle: [
+      "Bespoke automatic watch store",
+      "Parts configurator · payments · shipping",
+    ],
+    year: 2026,
+    bullets: [
+      "Built a watch parts configurator with 10K+ combinations so customers could choose every part and reduce back-and-forth with the owner.",
+      "Shipped the full store solo with Next.js, Cloudflare, Stripe payments, Auth0, an admin panel, and shipping tracking.",
+      "Composited layered product images server-side with Photon and added per-page SEO, reaching 98 on PageSpeed Insights.",
+      "Self-hosted Rybbit for analytics and telemetry, iterating with the client as requirements changed.",
+    ],
+    tech: [
+      "Next.js",
+      "Tailwind",
+      "Cloudflare",
+      "Stripe",
+      "Auth0",
+      "Photon",
+      "Rybbit",
+      "SEO",
+    ],
+    link: "https://aswatches.net",
+  },
+  {
+    name: "HiddenFrame",
+    displayLines: ["Hidden", "Frame"],
+    subtitle: ["Full-stack steganography tool", "C++ pipeline · Remix frontend"],
+    year: 2024,
+    bullets: [
+      "Developed a full-stack steganography tool with C++ image processing, Crow API services, and a Remix.js frontend.",
+      "Deployed on AWS EC2 with Ubuntu, configured security groups and IAM roles, and managed the DevOps cycle through CI/CD.",
+      "Managed end-to-end DevOps operations including DNS, SSL, and Caddy reverse proxy configuration.",
+    ],
+    tech: ["C++", "Crow", "Remix.js", "SQLite", "Linux", "Caddy", "AWS EC2", "CI/CD"],
+    github: "https://github.com/csci265-team/HiddenFrame",
+  },
+];
+
+export const moreProjects: Project[] = [
+  {
     name: "AI Scheduling System",
     displayLines: ["AI", "Scheduler"],
     subtitle: [
@@ -104,29 +141,6 @@ export const projects: Project[] = [
     tech: ["Next.js", "Tailwind", "Cloudflare Workers", "Twilio", "Claude API"],
   },
   {
-    name: "Saakhi",
-    displayLines: ["Saakhi"],
-    subtitle: ["Technical lead", "Sikh education app · Ik Saakhi Har Roz"],
-    year: 2020,
-    period: "2020 — Present",
-    bullets: [
-      "Rebuilt an end-to-end mobile product in Java/Kotlin and SwiftUI, averaging 97% size reduction (80MB to ~2MB).",
-      "Architected serverless Cloudflare Workers backend with D1 and R2, reducing load times by 80%.",
-      "Managed app releases and targeted marketing strategies to successfully scale to 100K+ combined users.",
-      "Extensively utilized Android connectivity APIs (NetworkCallback, WifiManager, BluetoothAdapter) for network state broadcasting and seamless external audio playback.",
-    ],
-    tech: [
-      "iOS",
-      "Android",
-      "Cloudflare Workers",
-      "Cloudflare D1",
-      "Cloudflare R2",
-      "Mobile UI",
-      "Education",
-    ],
-    link: "https://www.sikhsaakhi.com/download",
-  },
-  {
     name: "Neurodrive",
     displayLines: ["Neuro", "Drive"],
     subtitle: ["BCI-controlled racing game", "Muse 2 EEG · Unity"],
@@ -137,40 +151,6 @@ export const projects: Project[] = [
       "Built multiplayer netcode on Unity Transport, handling lobby creation and abstracting IP and port-forwarding logic.",
     ],
     tech: ["Unity", "C#", "EEG/BCI", "Unity Transport", "Multiplayer Netcode"],
-  },
-  {
-    name: "HiddenFrame",
-    displayLines: ["Hidden", "Frame"],
-    subtitle: ["Full-stack steganography tool", "C++ pipeline · Remix frontend"],
-    year: 2024,
-    bullets: [
-      "Developed a full-stack steganography tool with C++ image processing, Crow API services, and a Remix.js frontend.",
-      "Deployed on AWS EC2 with Ubuntu, configured security groups and IAM roles, and managed the DevOps cycle through CI/CD.",
-      "Managed end-to-end DevOps operations including DNS, SSL, and Caddy reverse proxy configuration.",
-    ],
-    tech: ["C++", "Crow", "Remix.js", "SQLite", "Linux", "Caddy", "AWS EC2", "CI/CD"],
-    github: "https://github.com/csci265-team/HiddenFrame",
-  },
-  {
-    name: "Multi-Cloud Kubernetes Homelab",
-    displayLines: ["K8s", "Homelab"],
-    subtitle: ["Four-node multi-cloud cluster", "OCI · on-prem · Tailscale mesh"],
-    year: 2025,
-    bullets: [
-      "Operate a 4-node k3s cluster spanning two OCI regions and an on-premise server, networked entirely over a Tailscale WireGuard mesh.",
-      "Configured hybrid nodes across a local x86-64 server and three cloud OCI Ampere ARM instances.",
-      "Implemented virtual IP load balancing using Kube-vip, MetalLB, and Traefik Ingress for redundancy.",
-    ],
-    tech: [
-      "k3s",
-      "OCI",
-      "Docker",
-      "PostgreSQL",
-      "Tailscale",
-      "Traefik",
-      "Kube-vip",
-      "MetalLB",
-    ],
   },
   {
     name: "RPi iPod Emulator",

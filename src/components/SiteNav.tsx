@@ -1,8 +1,8 @@
 import { profile } from "@/data/profile";
 
 const navigation = [
-  { number: "01", label: "Work", href: "#projects" },
-  { number: "02", label: "History", href: "#experience" },
+  { number: "01", label: "Experience", href: "#experience" },
+  { number: "02", label: "Projects", href: "#projects" },
   { number: "03", label: "Contact", href: "#contact" },
 ];
 
@@ -26,7 +26,7 @@ export function SiteNav() {
             key={item.href}
             href={item.href}
           >
-            <span>{item.number}</span> {item.label}
+            <span className="max-sm:hidden">{item.number}</span> {item.label}
           </a>
         ))}
       </div>

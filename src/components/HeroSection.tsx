@@ -9,15 +9,19 @@ export function HeroSection() {
   return (
     <header
       id="top"
-      className="relative mx-auto flex h-dvh min-h-0 w-full max-w-[1440px] scroll-mt-12 flex-col justify-center overflow-hidden px-5 pt-12 pb-10 sm:px-7 sm:pt-14 sm:pb-12 lg:pt-16 lg:pb-14"
+      className="relative mx-auto flex min-h-dvh w-full max-w-[1440px] scroll-mt-12 flex-col justify-center overflow-hidden px-5 pt-12 pb-10 sm:px-7 sm:pt-14 sm:pb-12 lg:pt-16 lg:pb-14"
     >
       <span id="home" className="absolute top-0" aria-hidden="true" />
-      <div className="relative flex items-center gap-3 text-xs tracking-[0.12em] text-[var(--muted)] uppercase sm:tracking-[0.18em]">
+      <div className="relative grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-1.5 text-xs tracking-[0.12em] text-[var(--muted)] uppercase [text-wrap:balance] sm:tracking-[0.18em]">
         <span
           className="h-1.5 w-1.5 animate-[availability-pulse_2s_ease-in-out_3] bg-[var(--accent)]"
           aria-hidden="true"
         />
         <p className="m-0">{profile.availability}</p>
+        <p className="col-start-2 m-0">
+          Currently:{" "}
+          <span className="text-[var(--fg)]">{profile.currentRole}</span>
+        </p>
       </div>
 
       <h1
@@ -78,8 +82,8 @@ export function HeroSection() {
 
       <a
         className="group absolute bottom-2.5 left-1/2 z-[2] grid h-8 w-8 -translate-x-1/2 place-items-center sm:bottom-5"
-        href="#projects"
-        aria-label="Scroll to work"
+        href="#experience"
+        aria-label="Scroll to experience"
       >
         <span
           className="grid h-4 w-7 grid-cols-[repeat(5,4px)] grid-rows-[repeat(3,4px)] gap-0.5"

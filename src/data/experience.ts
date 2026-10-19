@@ -27,6 +27,19 @@ export const experiences: Experience[] = [
     ],
   },
   {
+    role: "Technical Lead",
+    company: "Saakhi — Sikh History and Gurmat",
+    location: "Bahrain / Remote",
+    period: "Jan 2020 – Present",
+    link: "https://www.sikhsaakhi.com/download",
+    bullets: [
+      "Rebuilt an end-to-end mobile product in Java/Kotlin and SwiftUI, averaging 97% size reduction (80MB to ~2MB).",
+      "Architected serverless Cloudflare Workers backend with D1 and R2, reducing load times by 80%.",
+      "Managed app releases and targeted marketing strategies to successfully scale to 100K+ combined users.",
+      "Extensively utilized Android connectivity APIs (NetworkCallback, WifiManager, BluetoothAdapter) for network state broadcasting and seamless external audio playback.",
+    ],
+  },
+  {
     role: "AI Content and Communications Specialist",
     company: "Vancouver Island University",
     location: "Nanaimo, BC",
@@ -73,6 +86,9 @@ export const experiences: Experience[] = [
       "Triaged issues and merged pull requests to standardize patterns and maintain code quality.",
     ],
   },
+];
+
+export const otherExperiences: Experience[] = [
   {
     role: "ABE Digital Support",
     company: "Vancouver Island University",
