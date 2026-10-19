@@ -20,7 +20,7 @@ export const projects: Project[] = [
       "Built a physical multiplayer zombie-tag game on event badges with C/C++ firmware for ESP32-C3 microcontrollers using ESP-IDF and FreeRTOS.",
       "Used ESP-NOW for sub-second proximity detection, human/zombie tagging, and synchronized round countdowns without relying on local Wi-Fi.",
       "Integrated Sentry firmware logging and streamed live match telemetry to a web dashboard through Cloudflare Workers, Durable Objects, and WebSockets.",
-      "Completed Solana's scavenger winning a Solana Seeker phone after deploying a devnet program and an x402 payment endpoint.",
+      "Completed Solana's scavenger hunt, winning a Solana Seeker phone after deploying a devnet program and an x402 payment endpoint.",
     ],
     tech: [
       "ESP32-C3",
